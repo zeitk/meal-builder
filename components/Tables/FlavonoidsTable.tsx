@@ -1,6 +1,7 @@
 import { DataTable } from "react-native-paper";
 import { ScrollView, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
+import React from "react";
 
 export default function FlavonoidsTable(flavonoidsProps: any) {
 

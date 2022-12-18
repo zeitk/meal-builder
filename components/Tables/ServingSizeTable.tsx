@@ -1,53 +1,56 @@
-import { DataTable } from "react-native-paper";
-import { StyleSheet } from "react-native";
+
+import { StyleSheet, Text, View, TextInput } from "react-native";
 import { useEffect, useState } from "react";
 
-export default function ServingSizeTable(servingSizeProps: any) {
+export default function ServingSizeTable(props: any) {
 
     // states
-    const [servingSize, setServingSize] = useState<any>([]);
-    const [headers, setHeaders] = useState<string[]>([]);
+    const [baseServingSize, setBaseServingSize] = useState<any>([]);
+    const [unit, setUnit] = useState<string>("");
+
+    function newServingSize(servingSize: any) {
+
+        if (servingSize==="") servingSize=baseServingSize;
+
+        const multiplier = servingSize/baseServingSize;
+        props.newMultiplier(multiplier)
+    }
 
     useEffect(() => {
 
+        let servingSizeProps = props.servingSizeProps;  
         let paramHeaders: string[] = [];
-        let index = "";
-        for (const i in servingSizeProps) {
 
-            index = i;
-
-            // save header titles
-            for (let header in servingSizeProps[i]) {
-                paramHeaders.push(header);
-            }
-
-        }
-        if (index !== "") {
-            setServingSize(servingSizeProps[index]);
-            setHeaders(paramHeaders);
+        // save header titles
+        for (let header in servingSizeProps) {
+            paramHeaders.push(header);
         }
 
-    }, [servingSize])
+        // store the unit and the serving size
+        paramHeaders.forEach((header) => {
+            header === "amount" ? setBaseServingSize(servingSizeProps[header]) : setUnit(servingSizeProps[header])
+        })
+        
+    }, [props])
 
     return <>
-        <DataTable>
-            <DataTable.Header>
-                {
-                    headers.map((header: string, i) => {
-                        return <DataTable.Title textStyle={styles.header} key={i} numeric={true}>{header}</DataTable.Title>
-                    })
-                }
-            </DataTable.Header>
+        <View style={{marginTop: 15}}>
+            <Text>
+                Serving Size
+            </Text>
+        </View>
 
-            <DataTable.Row>
-                {
-                    headers.map((header: string, j: number) => {
-                        return <DataTable.Cell key={j} textStyle={styles.text} numeric={true}>{servingSize[header]}</DataTable.Cell>
-                    })
-                }
-            </DataTable.Row>
+        <View style={styles.view}>
+            <Text style={{fontSize: 12, color: '#757577', fontWeight: '500', paddingRight: 10}}>Amount: </Text>
+            <TextInput  style={styles.textInput}
+                        selectionColor="#f7f7f7"  
+                        keyboardType={"numeric"} 
+                        returnKeyType="done" 
+                        onSubmitEditing={(value) => newServingSize(value.nativeEvent.text) } 
+                        placeholder={(baseServingSize*props.multiplier).toString()}></TextInput>
+            <Text> {unit}</Text>
+        </View>
 
-        </DataTable>
     </>
 }
 
@@ -58,5 +61,23 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 12
+    },
+    textInput: {
+        width: '15%',
+        padding: 5,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: '#dadfe1'
+    },
+    view: {
+        flexDirection: 'row',
+        width: '98%',
+        padding: 8,
+        paddingLeft: 12,
+        marginTop: 10,
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: '#dadfe1',
+        alignItems: 'center'
     }
 })

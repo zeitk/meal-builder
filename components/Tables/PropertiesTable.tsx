@@ -1,5 +1,5 @@
 import { DataTable } from "react-native-paper";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
 
 export default function PropertiesTable(propertiesProps: any) {
@@ -28,7 +28,6 @@ export default function PropertiesTable(propertiesProps: any) {
 
             // sort by name of property
             propertiesProps[index].sort((a: any, b: any) => a.name.localeCompare(b.name));
-            console.log(propertiesProps[index])
             setProperties(propertiesProps[index]);
             setTotal(propertiesProps[index].length);
             setHeaders(paramHeaders);
@@ -37,6 +36,11 @@ export default function PropertiesTable(propertiesProps: any) {
     }, [properties])
 
     return <>
+        <View style={{marginTop: 20, marginBottom: 5}}>
+            <Text>
+                Properties
+            </Text>
+        </View>
         <DataTable>
             <DataTable.Header>
                 {
@@ -47,7 +51,7 @@ export default function PropertiesTable(propertiesProps: any) {
             </DataTable.Header>
             
             {/* the rows should scroll*/}
-            <ScrollView style={styles.view}>
+            <View style={styles.view}>
             {
                 // go through the array of nutrients, headers used as indexes to find values
                 properties.map((property: any, i: number) => {
@@ -56,14 +60,14 @@ export default function PropertiesTable(propertiesProps: any) {
                             {
                                 // have non-name items populate right side of cell to give more space to name
                                 headers.map((header: string, j: number) => {
-                                    return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{property[header]}</DataTable.Cell>
+                                    return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{ header==="amount" ? Number(property[header]).toFixed(2) : property[header]}</DataTable.Cell>
                                 })
                             }
                         </DataTable.Row>
                     )
                 })
             }
-            </ScrollView>
+            </View>
         </DataTable>
     </>
 }
@@ -74,7 +78,7 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize'
     },
     view: {
-        height: 300
+        
     },
     text: {
         fontSize: 12

@@ -1,41 +1,36 @@
 import { DataTable } from "react-native-paper";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
 
-export default function FlavonoidsTable(flavonoidsProps: any) {
+export default function FlavonoidsTable(props: any) {
 
     // flavonoid states
     const [flavonoids, setFlavonoids] = useState<any>([]);
     const [headers, setHeaders] = useState<string[]>([]);
-    const [total, setTotal] = useState(0);
 
     useEffect(() => {
 
         let paramHeaders: string[] = [];
-        let index = "";
-        
-        for (const i in flavonoidsProps) {
+        let flavonoidsProps = props.flavonoidsProps
 
-            index = i;
-
-            // save header titles
-            for (let header in flavonoidsProps[i][0]) {
-                paramHeaders.push(header);
-            }
-
-        }
-        if (index!=="") {
-
-            // sort by name of nutrient
-            flavonoidsProps[index].sort((a: any, b: any) => a.name.localeCompare(b.name));
-            setFlavonoids(flavonoidsProps[index]);
-            setTotal(flavonoidsProps[index].length);
-            setHeaders(paramHeaders);
+        // save header titles
+        for (let header in flavonoidsProps[0]) {
+            paramHeaders.push(header);
         }
 
-    }, [flavonoids])
+        // sort by name of nutrient
+        flavonoidsProps.sort((a: any, b: any) => a.name.localeCompare(b.name));
+        setFlavonoids(flavonoidsProps);
+        setHeaders(paramHeaders);
+
+    }, [props])
 
     return <>
+        <View style={{marginTop: 85, marginBottom: 5}}>
+            <Text>
+                Flavonoids
+            </Text>
+        </View>
         <DataTable>
             <DataTable.Header>
                 {
@@ -55,7 +50,8 @@ export default function FlavonoidsTable(flavonoidsProps: any) {
                             {
                                 // have non-name items populate right side of cell to give more space to name
                                 headers.map((header: string, j: number) => {
-                                    return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{flavonoid[header]}</DataTable.Cell>
+                                    if (header==="amount") return <DataTable.Cell key={j} textStyle={styles.text} numeric={true}>{(flavonoid[header]*props.multiplier).toFixed(2)}</DataTable.Cell>
+                                    else return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{flavonoid[header]}</DataTable.Cell>
                                 })
                             }
                         </DataTable.Row>

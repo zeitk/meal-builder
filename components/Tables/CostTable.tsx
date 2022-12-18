@@ -1,3 +1,4 @@
+import { StyleSheet, Text, View } from "react-native";
 import { DataTable } from "react-native-paper";
 
 export default function CostTable(cost: any) {
@@ -11,16 +12,27 @@ export default function CostTable(cost: any) {
     }
 
     return<>
+        <View style={{marginTop: 20, marginBottom: 5}}>
+            <Text>
+                Cost
+            </Text>
+        </View>
         <DataTable>
             <DataTable.Header>
-                <DataTable.Title>Cost</DataTable.Title>
-                <DataTable.Title>Unit</DataTable.Title>
+                <DataTable.Title textStyle={styles.text}>Cost</DataTable.Title>
+                <DataTable.Title textStyle={styles.text}>Unit</DataTable.Title>
             </DataTable.Header>
 
             <DataTable.Row>
-                <DataTable.Cell>{val}</DataTable.Cell>
-                <DataTable.Cell>{units}</DataTable.Cell>
+                <DataTable.Cell textStyle={styles.text}>{val}</DataTable.Cell>
+                <DataTable.Cell textStyle={styles.text}>{units}</DataTable.Cell>
             </DataTable.Row>
         </DataTable>
     </>
 }
+
+const styles = StyleSheet.create({
+    text: {
+        fontSize: 12
+    }
+})

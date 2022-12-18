@@ -5,7 +5,7 @@ export default function Meals() {
 
     return<>
         <View>
-            <Text>This is Cookbook</Text>
+            <Text>This is Meals</Text>
         </View>
     </>
 }

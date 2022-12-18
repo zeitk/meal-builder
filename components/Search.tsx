@@ -1,16 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { Text, View, TextInput, StyleSheet, Pressable, Alert, SafeAreaView, ScrollView, Keyboard } from "react-native";
-import { Button, DataTable, Modal } from "react-native-paper";
+import { useEffect, useState } from "react";
+import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard } from "react-native";
+import { Button, Portal } from "react-native-paper";
+import { Feather, Entypo } from "@expo/vector-icons";
+
 import { QuicklistContext } from "../context/QuicklistContext";
 import FoodItem from "./FoodItem";
-import { Feather, Entypo } from "@expo/vector-icons";
-import { DataTablePagination } from "react-native-paper/lib/typescript/components/DataTable/DataTablePagination";
-import CostTable from "./Tables/CostTable";
-import NutritionTable from "./Tables/NutritionTable";
-import FlavonoidsTable from "./Tables/FlavonoidsTable";
-import PropertiesTable from "./Tables/PropertiesTable";
-import CaloricBreakdownTable from "./Tables/CaloricBreakdownTable";
-import ServingSizeTable from "./Tables/ServingSizeTable";
+import FoodModal from "./FoodModal";
 
 interface Food {
     [key: string]: any,
@@ -25,13 +20,20 @@ interface Nutrition {
     [key: string]: any
 }
 
+const slogans: string[] = [
+    "Watcha feeling?",
+    "Ex: Potato",
+    "Search for anything!"
+]
+
 export default function Search() {
 
     // search related states
     const [items, setItems] = useState([]);
     const [totalItems, setTotalItems] = useState(0);
     const [searchString, setSearchString] = useState("");
-    const [pressed, setPressed] = useState(false)
+    const [pressed, setPressed] = useState(false);
+    const [slogan, setSlogan] = useState("")
 
     // modal and table related states
     const [modalVisible, setModalVisible] = useState(false);
@@ -42,15 +44,20 @@ export default function Search() {
     const [servingSize, setServingSize] = useState<any>([]);
     const [cost, setCost] = useState([]);
     const [currentId, setCurrentId] = useState("");
+    const [currentName, setCurrentName] = useState("");
 
     useEffect(() => {
-
+        // set TextInput placeholder
+        setSlogan(slogans[(Math.floor(Math.random()*3))])
     }, [])
 
     const searchItems = (() => {
 
-        // don't search if there's nothing to search for - or if we just pressed cancel
+        // don't search if there's nothing to search for, or if we just pressed cancel
         if (searchString==="") return
+
+        // change our placeholder
+        setSlogan(slogans[(Math.floor(Math.random()*3))])
 
         const params = {
             query: searchString,
@@ -80,8 +87,8 @@ export default function Search() {
         setPressed(false);
     })
 
-    function moreInfo(id: number) {
-        
+    function moreInfo(id: number, name: string) {
+
         // don't fetch if we already have the info
         if (id.toString()!==currentId) {
 
@@ -105,8 +112,11 @@ export default function Search() {
                     parseNutrition(json.nutrition);
                     setCost(json.estimatedCost);
             })
+
+            // info is retrieved so show modal. Store ID of food to prevent additional API calls
             setModalVisible(true);
             setCurrentId(id.toString())
+            setCurrentName(name);
         }
 
         // we already have the info, just show it
@@ -117,7 +127,7 @@ export default function Search() {
 
     const parseNutrition = (nutrition: any) => {
         
-        // nutrition has many sections we'll need in individual tables, let's split them up here
+        // nutrition has many sections that we'll need in individual tables, let's split them up here
         for (const index in nutrition) {
             if (index==="caloricBreakdown") setCaloricBreakdown(nutrition[index]);
             else if (index==="nutrients") setNutrients(nutrition[index]);
@@ -150,7 +160,7 @@ export default function Search() {
                         style={styles.input}
                         value={searchString}
                         onChangeText={setSearchString}
-                        placeholder={"Whatcha feeling?"}
+                        placeholder={slogan}
                         returnKeyType="search"
                         onEndEditing={searchItems}
                         onFocus={() => { setPressed(true) }} >
@@ -181,37 +191,32 @@ export default function Search() {
                     })
                 }
             </ScrollView>
-            <Modal visible={modalVisible} onDismiss={toggleModal}>
-                <View style={styles.modal}>
-                    <Text>TEST</Text>
-                    <CostTable cost={cost}></CostTable>
-                    {/* <NutritionTable nutrition={nutrients}></NutritionTable> */}
-                    {/* <CaloricBreakdownTable caloricBreakdownProps={caloricBreakdown}></CaloricBreakdownTable> */}
-                    <ServingSizeTable servingSizeProps={servingSize}></ServingSizeTable>
-                    {/* <PropertiesTable propertiesProps={properties}></PropertiesTable> */}
-                    {/* <FlavonoidsTable flavonoidsProps={flavonoids}></FlavonoidsTable> */}
-                    <Button children="Close" onPress={toggleModal}></Button>
-                    <Button children="PARSE" onPress={toggleModal}></Button>
-                </View>
-            </Modal>
+
+            <Portal.Host>
+                <FoodModal name={currentName} nutrients={nutrients} cost={cost} caloricBreakdown={caloricBreakdown} servingSize={servingSize} properties={properties} flavonoids={flavonoids} toggle={toggleModal} modalVisible={modalVisible}></FoodModal>
+            </Portal.Host>
+
         </SafeAreaView>
     </>
 }
 
 const styles = StyleSheet.create({
     safeView: {
-        // flex: 1
+        flex: 1,
+        backgroundColor: '#f7f7f7'
     },
     scrollView: {
+        backgroundColor: '#dadfe1',
         marginTop: 0,
-        marginBottom: 75
+        marginBottom: 0
     },
     container: {
         margin: 15,
         width: '90%',
         justifyContent: 'flex-start',
         alignItems: 'center',
-        flexDirection: 'row'
+        flexDirection: 'row',
+        
     },
     input: {
         fontSize: 20,
@@ -240,18 +245,5 @@ const styles = StyleSheet.create({
         width: '95%',
         backgroundColor: '#dadfe1',
         alignItems: 'center',
-    },
-    modal: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        height: 600,
-        padding: 10,
-        margin: 15,
-        marginTop: -40,
-        backgroundColor: '#f7f7f7',
-        borderColor: '#282728',
-        borderWidth: 3,
-        borderRadius: 15
     }
 })

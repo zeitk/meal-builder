@@ -1,5 +1,5 @@
 import { DataTable } from "react-native-paper";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
 
 export default function CaloricBreakdownTable(caloricBreakdownProps: any) {
@@ -30,11 +30,16 @@ export default function CaloricBreakdownTable(caloricBreakdownProps: any) {
     }, [caloricBreakdown])
 
     return <>
+        <View style={{marginBottom: 5}}>
+            <Text>
+                Caloric Breakdown
+            </Text>
+        </View>
         <DataTable>
             <DataTable.Header>
                 {
                     headers.map((header: string, i) => {
-                        return <DataTable.Title textStyle={styles.header} key={i} numeric={true}>{"% " + header.slice(7,99)}</DataTable.Title>
+                        return <DataTable.Title textStyle={styles.header} key={i} numeric={false}>{"% " + header.slice(7,99)}</DataTable.Title>
                     })
                 }
             </DataTable.Header>
@@ -42,7 +47,7 @@ export default function CaloricBreakdownTable(caloricBreakdownProps: any) {
             <DataTable.Row>
                 {
                     headers.map((header: string, j: number) => {
-                        return <DataTable.Cell key={j} textStyle={styles.text} numeric={true}>{caloricBreakdown[header]}</DataTable.Cell>
+                        return <DataTable.Cell key={j} textStyle={styles.text} numeric={false}>{caloricBreakdown[header]}</DataTable.Cell>
                     })
                 }
             </DataTable.Row>

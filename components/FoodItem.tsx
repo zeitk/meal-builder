@@ -33,7 +33,7 @@ export default function FoodItem(props: Food) {
     }
 
     function showMoreInfo() {
-        props.callback(props.id);
+        props.callback(props.id, props.name);
     }
 
     return <>
@@ -59,25 +59,29 @@ export default function FoodItem(props: Food) {
 
 const styles = StyleSheet.create({
     card: {
-        borderColor: 'black',
+        borderColor: '#646569',
         borderWidth: 4,
         borderRadius: 15,
         backgroundColor: 'white',
         margin: 5,
         marginLeft: 15,
         marginRight: 15,
-        height: 175,
+        height: 125,
     },
     image: {
         height: 100,
         width: 100,
         resizeMode: 'contain',
         marginLeft: 1,
-        marginTop: 25
+        marginTop: 5,
+        
     },
     title: {
-        textTransform: 'uppercase',
+        textTransform: 'capitalize',
         fontWeight: '500',
-        textAlign: 'center'
+        textAlign: 'left',
+        marginLeft: 10,
+        fontSize: 20,
+        color: '#494949'
     }
 })

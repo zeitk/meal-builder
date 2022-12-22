@@ -1,18 +1,23 @@
+import React from 'react'
+
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Meals from "../components/Meals";
 import Home from '../components/Home';
 import Search from "../components/Search";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
-import { QuicklistContext } from "../context/QuicklistContext";
+
+import { useState } from 'react';
+import QuicklistContext from '../context/QuicklistContext';
 
 const TabNavigator = createBottomTabNavigator();
 
 export default function Tabs() {
     
+    const [quicklist, setQuicklist] = useState<any[]>([])
     // TODO add login capabilities 
 
     return<>
-
+        <QuicklistContext.Provider value={[quicklist,setQuicklist]}>
         <TabNavigator.Navigator>
             <TabNavigator.Screen name="Home" component={Home} options={{headerShown: true, tabBarIcon() {
                 return<>
@@ -41,6 +46,6 @@ export default function Tabs() {
                     </MaterialCommunityIcons></>
                 },}}></TabNavigator.Screen>
         </TabNavigator.Navigator>
-
+        </QuicklistContext.Provider>
     </>
 }

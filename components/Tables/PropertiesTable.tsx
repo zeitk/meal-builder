@@ -1,3 +1,4 @@
+import React from 'react'
 import { DataTable } from "react-native-paper";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
@@ -13,6 +14,8 @@ export default function PropertiesTable(propertiesProps: any) {
 
         let paramHeaders: string[] = [];
         let index = "";
+        
+        if (propertiesProps===undefined) return
         
         for (const i in propertiesProps) {
 

@@ -1,9 +1,11 @@
+import React from 'react'
+
 import { useEffect, useState } from "react";
 import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard } from "react-native";
 import { Button, Portal } from "react-native-paper";
 import { Feather, Entypo } from "@expo/vector-icons";
 
-import { QuicklistContext } from "../context/QuicklistContext";
+
 import FoodItem from "./FoodItem";
 import FoodModal from "./FoodModal";
 
@@ -36,12 +38,8 @@ export default function Search() {
     const [slogan, setSlogan] = useState("")
 
     // modal and table related states
+    const [nutrition, setNutrition] = useState<any>({})
     const [modalVisible, setModalVisible] = useState(false);
-    const [nutrients, setNutrients] = useState<any>([]);
-    const [caloricBreakdown, setCaloricBreakdown] = useState<any>([]);
-    const [flavonoids, setFlavonoids] = useState<any>([]);
-    const [properties, setProperties] = useState<any>([]);
-    const [servingSize, setServingSize] = useState<any>([]);
     const [cost, setCost] = useState([]);
     const [currentId, setCurrentId] = useState("");
     const [currentName, setCurrentName] = useState("");
@@ -109,31 +107,19 @@ export default function Search() {
             })
                 .then(res => res.json())
                 .then(json => {
-                    parseNutrition(json.nutrition);
+                    setNutrition(json.nutrition)
                     setCost(json.estimatedCost);
             })
 
-            // info is retrieved so show modal. Store ID of food to prevent additional API calls
-            setModalVisible(true);
+            // info is retrieved, show modal. Store ID of food to prevent additional API calls
             setCurrentId(id.toString())
             setCurrentName(name);
+            setModalVisible(true);
         }
 
         // we already have the info, just show it
         else {
             setModalVisible(true);
-        }
-    }
-
-    const parseNutrition = (nutrition: any) => {
-        
-        // nutrition has many sections that we'll need in individual tables, let's split them up here
-        for (const index in nutrition) {
-            if (index==="caloricBreakdown") setCaloricBreakdown(nutrition[index]);
-            else if (index==="nutrients") setNutrients(nutrition[index]);
-            else if (index==="flavonoids") setFlavonoids(nutrition[index]);
-            else if (index==="properties") setProperties(nutrition[index]);
-            else if (index==="weightPerServing") setServingSize(nutrition[index]);
         }
     }
 
@@ -193,7 +179,7 @@ export default function Search() {
             </ScrollView>
 
             <Portal.Host>
-                <FoodModal name={currentName} nutrients={nutrients} cost={cost} caloricBreakdown={caloricBreakdown} servingSize={servingSize} properties={properties} flavonoids={flavonoids} toggle={toggleModal} modalVisible={modalVisible}></FoodModal>
+                <FoodModal nutrition={nutrition} name={currentName} cost={cost} id={currentId} toggle={toggleModal} modalVisible={modalVisible}></FoodModal>
             </Portal.Host>
 
         </SafeAreaView>
@@ -207,6 +193,7 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         backgroundColor: '#dadfe1',
+        height: '100%',
         marginTop: 0,
         marginBottom: 0
     },

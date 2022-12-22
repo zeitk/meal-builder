@@ -1,3 +1,4 @@
+import React from 'react'
 import { useState } from "react";
 import { StyleSheet, Text, View, Image, Pressable } from "react-native";
 import { Card } from "react-native-paper";
@@ -15,15 +16,6 @@ const imageSize = "100x100";
 const imageUrl = "https://spoonacular.com/cdn/ingredients_"
 
 export default function FoodItem(props: Food) {
-
-    const [isVisible, setIsVisible] = useState(false)
-
-    function toggleModal() {
-        if (!isVisible) setIsVisible(true);
-        else {
-            setIsVisible(false)
-        }
-    }
 
     function foodImage() {
         return(
@@ -48,8 +40,6 @@ export default function FoodItem(props: Food) {
                         left={foodImage} 
                         leftStyle={styles.image}>
                     </Card.Title>
-                    {/* <Image source={{ uri: imageUrl + imageSize + "/" + props.image }}
-                        style={styles.image}></Image> */}
                 </Card>
 
             </Pressable>

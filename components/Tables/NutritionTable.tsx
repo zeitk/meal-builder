@@ -1,3 +1,4 @@
+import React from 'react'
 import { DataTable } from "react-native-paper";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { useEffect, useState } from "react";
@@ -14,6 +15,8 @@ export default function NutritionTable(props: any) {
 
         let nutrition = props.nutrition;
         let paramHeaders: string[] = [];
+
+        if (nutrition===undefined) return
 
         // save header titles
         for (let header in nutrition[0]) {

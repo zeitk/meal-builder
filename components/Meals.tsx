@@ -1,5 +1,7 @@
+import React from 'react'
+
 import { Text, View } from "react-native";
-import { QuicklistContext } from "../context/QuicklistContext";
+
 
 export default function Meals() {
 

@@ -1,3 +1,5 @@
 import { createContext } from "react";
 
-export const QuicklistContext = createContext([]);
+const QuicklistContext = createContext<any>([]);
+
+export default QuicklistContext

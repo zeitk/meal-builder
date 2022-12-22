@@ -14,6 +14,8 @@ export default function FlavonoidsTable(props: any) {
         let paramHeaders: string[] = [];
         let flavonoidsProps = props.flavonoidsProps
 
+        if (flavonoidsProps===undefined) return
+        
         // save header titles
         for (let header in flavonoidsProps[0]) {
             paramHeaders.push(header);

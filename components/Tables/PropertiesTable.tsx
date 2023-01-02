@@ -39,8 +39,8 @@ export default function PropertiesTable(propertiesProps: any) {
     }, [properties])
 
     return <>
-        <View style={{marginTop: 20, marginBottom: 5}}>
-            <Text>
+        <View style={{marginTop: 50, marginBottom: 5}}>
+            <Text style={{fontWeight: '500'}}>
                 Properties
             </Text>
         </View>
@@ -54,7 +54,7 @@ export default function PropertiesTable(propertiesProps: any) {
             </DataTable.Header>
             
             {/* the rows should scroll*/}
-            <View style={styles.view}>
+            <View>
             {
                 // go through the array of nutrients, headers used as indexes to find values
                 properties.map((property: any, i: number) => {
@@ -79,9 +79,6 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 12,
         textTransform: 'capitalize'
-    },
-    view: {
-        
     },
     text: {
         fontSize: 12

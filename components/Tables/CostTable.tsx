@@ -1,20 +1,26 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View } from "react-native";
 import { DataTable } from "react-native-paper";
 
-export default function CostTable(cost: any) {
-    let units = "N/A", val = "N/A";
-
-    for (const i in cost) {
-        for (const index in cost[i]) {
-            if (index==="value") {  val = cost[i][index]; }
-            else if (index==="unit") { units = cost[i][index]}
+export default function CostTable(props: any) {
+    
+    const [multiplier, setMultiplier] = useState<number>(1)
+    const [cost, setCost] = useState<any>(1)
+    const [units, setUnits] = useState<String>("")
+ 
+    useEffect(() => {
+        setCost("N/A");
+        setUnits("N/A")
+        for (const i in props.cost) {
+            if (i==="value") {  setCost(props.cost[i]) }
+            else if (i==="unit") { setUnits(props.cost[i])}          
         }
-    }
+        setMultiplier(props.multiplier)
+    }, [props])
 
     return<>
-        <View style={{marginTop: 20, marginBottom: 5}}>
-            <Text>
+        <View style={{marginTop: 5, marginBottom: 5}}>
+            <Text style={{fontWeight: '500'}}>
                 Cost
             </Text>
         </View>
@@ -25,8 +31,10 @@ export default function CostTable(cost: any) {
             </DataTable.Header>
 
             <DataTable.Row>
-                <DataTable.Cell textStyle={styles.text}>{val}</DataTable.Cell>
-                <DataTable.Cell textStyle={styles.text}>{units}</DataTable.Cell>
+                {/* <DataTable.Cell textStyle={styles.text}>{(cost*multiplier).toFixed(2)}</DataTable.Cell>
+                <DataTable.Cell textStyle={styles.text}>{units}</DataTable.Cell> */}
+                <DataTable.Cell textStyle={styles.text}>{((cost*multiplier>100 && units==="US Cents")) ? (cost*multiplier/100).toFixed(2):(cost*multiplier).toFixed(2)}</DataTable.Cell>
+                <DataTable.Cell textStyle={styles.text}>{((cost*multiplier>100 && units==="US Cents")) ? "US Dollars":units}</DataTable.Cell>
             </DataTable.Row>
         </DataTable>
     </>

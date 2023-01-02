@@ -29,8 +29,8 @@ export default function FlavonoidsTable(props: any) {
     }, [props])
 
     return <>
-        <View style={{marginTop: 85, marginBottom: 5}}>
-            <Text>
+        <View style={{marginTop: 25, marginBottom: 5}}>
+            <Text style={{fontWeight: '500'}}>
                 Flavonoids
             </Text>
         </View>
@@ -44,7 +44,7 @@ export default function FlavonoidsTable(props: any) {
             </DataTable.Header>
             
             {/* the rows should scroll*/}
-            <ScrollView style={styles.view}>
+            <ScrollView style={(props.isMealView) ? styles.mealView:styles.view}>
             {
                 // go through the array of nutrients, headers used as indexes to find values
                 flavonoids.map((flavonoid: any, i: number) => {
@@ -72,9 +72,12 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize'
     },
     view: {
-        height: 300
+        height: 255,
     },
     text: {
         fontSize: 12
+    },
+    mealView: {
+        height: '100%'
     }
 })

@@ -26,9 +26,12 @@ export default function FoodModal(props: any) {
 
     // add this item to the quicklist
     function addToQuicklist() {
+
+        // deep copy current food
         let foodObject = JSON.parse(JSON.stringify(props.nutrition))
         foodObject["cost"] = props.cost;
         foodObject["name"] = props.name;
+        foodObject["image"] = props.image
         foodObject["id"] = props.id;
 
         // don't store the same item twice
@@ -39,7 +42,10 @@ export default function FoodModal(props: any) {
                 return
             }
         });
-        if (found) return
+        if (found) {
+            Alert.alert("Already Added", capitalize(foodObject["name"])+" is already in your Quicklist")
+            return
+        }
 
         setQuicklist([
             ...quicklist,
@@ -109,15 +115,15 @@ export default function FoodModal(props: any) {
                         )
                     }
                     {
-                        (page == 2) &&
-                        (
-                            <CostTable cost={props.cost}></CostTable>
-                        )
-                    }
-                    {
                         (page === 2) &&
                         (
                             <PropertiesTable propertiesProps={props.nutrition["properties"]}></PropertiesTable>
+                        )
+                    }
+                    {
+                        (page == 3) &&
+                        (
+                            <CostTable cost={props.cost} multiplier={multiplier}></CostTable>
                         )
                     }
                     {
@@ -126,12 +132,16 @@ export default function FoodModal(props: any) {
                             <FlavonoidsTable flavonoidsProps={props.nutrition["flavonoids"]} multiplier={multiplier}></FlavonoidsTable>
                         )
                     }
-
-                    <View style={styles.bottom}>
-                        <Button children="Add to Quicklist" onPress={addToQuicklist}></Button>
-                        <Button children="Prev" onPress={prevPage} disabled={page===1}></Button>
-                        <Button children="Next" onPress={nextPage} disabled={page===3}></Button>
-                        <Button children="Close" onPress={toggleModal}></Button>
+                    <View style={styles.pageButtons}>
+                        <Button textColor="#2774AE" children="Prev" onPress={prevPage} disabled={page===1} labelStyle={styles.pageButtonText}></Button>
+                        <View style={styles.pageText}>
+                            <Text style={styles.text}>{page} of 3</Text>
+                        </View>
+                        <Button textColor="#2774AE" children="Next" onPress={nextPage} disabled={page===3} labelStyle={styles.pageButtonText}></Button>
+                    </View>
+                    <View style={styles.bottomButtons}>
+                        <Button textColor="#2774AE" children="Add to Quicklist" onPress={addToQuicklist} labelStyle={styles.buttonText}></Button>
+                        <Button textColor='#c5050c' style={{paddingLeft: 115}} children="Close" onPress={toggleModal} labelStyle={styles.buttonText}></Button>
                     </View>
                 </View>
             </Modal>      
@@ -141,7 +151,6 @@ export default function FoodModal(props: any) {
 
 const styles = StyleSheet.create({
     modal: {
-
         alignItems: 'center',
         height: 600,
         padding: 15,
@@ -152,15 +161,38 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         borderRadius: 15
     },
-    bottom: {
+    bottomButtons: {
         flexDirection: 'row',
         alignSelf: 'flex-start',
         position: 'absolute',
-        left: 17,
-        bottom: 20
+        left: 15,
+        bottom: 8
+    },
+    buttonText: {
+        fontSize: 16
+    }, 
+    pageButtonText: {
+        fontSize: 16
+    },   
+    pageButtons: {
+        flexDirection: 'row',
+        alignSelf: 'center',
+        position: 'absolute',
+        paddingLeft: 95,
+        bottom: 50,
+        width: '100%',
+        paddingTop: 10,
+        borderTopWidth: 1,
+        borderColor: '#dadfe1',
     },
     header: {
         textTransform: 'capitalize',
         fontSize: 24
+    },
+    text: {
+        lineHeight: 38
+    },
+    pageText: {
+        width: 40
     }
 })

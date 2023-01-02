@@ -1,12 +1,12 @@
 import React from 'react'
 
 import { useEffect, useState } from "react";
-import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard } from "react-native";
+import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard, Text } from "react-native";
 import { Button, Portal } from "react-native-paper";
 import { Feather, Entypo } from "@expo/vector-icons";
 
 
-import FoodItem from "./FoodItem";
+import FoodCard from "./FoodCard";
 import FoodModal from "./FoodModal";
 
 interface Food {
@@ -18,17 +18,19 @@ interface Food {
     possibleUnits: Array<string>
 }
 
-interface Nutrition {
-    [key: string]: any
-}
-
 const slogans: string[] = [
     "Watcha feeling?",
     "Ex: Potato",
     "Search for anything!"
 ]
 
-export default function Search() {
+const examples: string[] = [
+    "Potato",
+    "Broccoli",
+    "Bread"
+]
+
+export default function Search({ navigation }: any) {
 
     // search related states
     const [items, setItems] = useState([]);
@@ -38,27 +40,45 @@ export default function Search() {
     const [slogan, setSlogan] = useState("")
 
     // modal and table related states
+    const [exampleBanner, setExampleBanner] = useState<String>("")
     const [nutrition, setNutrition] = useState<any>({})
     const [modalVisible, setModalVisible] = useState(false);
     const [cost, setCost] = useState([]);
     const [currentId, setCurrentId] = useState("");
     const [currentName, setCurrentName] = useState("");
+    const [currentImage, setCurrentImage] = useState("");
 
     useEffect(() => {
-        // set TextInput placeholder
-        setSlogan(slogans[(Math.floor(Math.random()*3))])
-    }, [])
+        // have example search 
+        const searchExample = examples[Math.floor(Math.random()*examples.length)]
+        searchItems(searchExample)
+        setExampleBanner(searchExample)
 
-    const searchItems = (() => {
+        // close modal if it's open
+        navigation.addListener('tabPress', () => {
+            setModalVisible(false)
+          });
 
+        // set search placeholder
+        setSlogan(slogans[(Math.floor(Math.random()*slogans.length))])
+    },[navigation])
+
+    const beginSearch = () => {
         // don't search if there's nothing to search for, or if we just pressed cancel
         if (searchString==="") return
 
+        // get rid of example banner and begin search
+        setExampleBanner("")
+        searchItems(searchString)
+    }
+
+    const searchItems = ((input: any) => {
+
         // change our placeholder
-        setSlogan(slogans[(Math.floor(Math.random()*3))])
+        setSlogan(slogans[(Math.floor(Math.random()*slogans.length))])
 
         const params = {
-            query: searchString,
+            query: input,
             addChildre: 'true',
             metaInformation: 'true',
             sort: 'calories',
@@ -85,7 +105,7 @@ export default function Search() {
         setPressed(false);
     })
 
-    function moreInfo(id: number, name: string) {
+    function moreInfo(id: number, name: string, image: string) {
 
         // don't fetch if we already have the info
         if (id.toString()!==currentId) {
@@ -114,6 +134,7 @@ export default function Search() {
             // info is retrieved, show modal. Store ID of food to prevent additional API calls
             setCurrentId(id.toString())
             setCurrentName(name);
+            setCurrentImage(image)
             setModalVisible(true);
         }
 
@@ -148,7 +169,7 @@ export default function Search() {
                         onChangeText={setSearchString}
                         placeholder={slogan}
                         returnKeyType="search"
-                        onEndEditing={searchItems}
+                        onEndEditing={beginSearch}
                         onFocus={() => { setPressed(true) }} >
                     </TextInput>
                     {pressed && (
@@ -161,7 +182,7 @@ export default function Search() {
                 {/* show cancel button if searchbar is pressed */}
                 {pressed && (
                     <View>
-                        <Button children="Cancel" onPress={() => {
+                        <Button children="Cancel" textColor="#c5050c" onPress={() => {
                             setSearchString("")
                             Keyboard.dismiss();
                             setPressed(false);
@@ -171,15 +192,20 @@ export default function Search() {
             </View>
 
             <ScrollView style={styles.scrollView}>
+                {exampleBanner!=="" && (
+                    <View style={styles.exampleBanner}>
+                        <Text style={styles.exampleBannerText}>Example Search - {exampleBanner}</Text>
+                    </View> 
+                )}
                 {
                     items.map((item: Food, i) => {
-                        return <FoodItem key={i} aisle={item.aisle} id={item.id} image={item.image} name={item.name} possibleUnits={item.possibleUnits} callback={moreInfo}></FoodItem>
+                        return <FoodCard key={i} id={item.id} image={item.image} name={item.name} callback={moreInfo} mode={0}></FoodCard>
                     })
                 }
             </ScrollView>
 
             <Portal.Host>
-                <FoodModal nutrition={nutrition} name={currentName} cost={cost} id={currentId} toggle={toggleModal} modalVisible={modalVisible}></FoodModal>
+                <FoodModal nutrition={nutrition} name={currentName} cost={cost} id={currentId} image={currentImage} toggle={toggleModal} modalVisible={modalVisible}></FoodModal>
             </Portal.Host>
 
         </SafeAreaView>
@@ -189,13 +215,12 @@ export default function Search() {
 const styles = StyleSheet.create({
     safeView: {
         flex: 1,
-        backgroundColor: '#f7f7f7'
+        backgroundColor: '#f9f9f9'
     },
     scrollView: {
         backgroundColor: '#dadfe1',
         height: '100%',
-        marginTop: 0,
-        marginBottom: 0
+        paddingTop: 5
     },
     container: {
         margin: 15,
@@ -203,12 +228,20 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         flexDirection: 'row',
-        
+        height: 60
     },
     input: {
         fontSize: 20,
+        fontWeight: '300',
         width: '90%',
         marginLeft: 10,
+    },
+    exampleBanner: {
+        padding: 12
+    },
+    exampleBannerText: {
+        fontSize: 20,
+        fontWeight: '300'
     },
     feather: {
         marginLeft: 1

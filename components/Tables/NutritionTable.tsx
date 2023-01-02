@@ -48,8 +48,8 @@ export default function NutritionTable(props: any) {
 
     return <>
         {
-            // show 'Loading' text if fetch and state set are not complete
-            (nutrients.length) ? 
+        // show 'Loading' text until state is set
+        (nutrients.length) ? 
 
         <DataTable>
             <DataTable.Header>
@@ -62,7 +62,7 @@ export default function NutritionTable(props: any) {
             </DataTable.Header>
             
             {/* the rows should scroll*/}
-            <ScrollView style={styles.view}>
+            <ScrollView style={(props.isMealView) ? styles.mealView:styles.view}>
             {
                 // go through the array of nutrients, headers used as indexes to find values
                 nutrients.map((nutrient: any, i: number) => {
@@ -82,7 +82,9 @@ export default function NutritionTable(props: any) {
             </ScrollView>
         </DataTable>
         :
-        <Text>Loading!</Text>
+        <View style={styles.loadingView}>
+            <Text style={styles.loadingText}>Loading...</Text>
+        </View>
         }
     </>
 }
@@ -93,9 +95,20 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize'
     },
     view: {
-        height: 300
+        height: 300,
+    },
+    mealView: {
+        height: '100%'
     },
     text: {
         fontSize: 12
+    },
+    loadingView: {
+        justifyContent: 'center'
+    },
+    loadingText: {
+        fontSize: 17,
+        lineHeight: 300,
+        fontWeight: '500'
     }
 })

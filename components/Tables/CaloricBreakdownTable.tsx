@@ -31,8 +31,8 @@ export default function CaloricBreakdownTable(caloricBreakdownProps: any) {
     }, [caloricBreakdown])
 
     return <>
-        <View style={{marginBottom: 5}}>
-            <Text>
+        <View style={{marginTop: 40, marginBottom: 5}}>
+            <Text  style={{fontWeight: '500'}}>
                 Caloric Breakdown
             </Text>
         </View>

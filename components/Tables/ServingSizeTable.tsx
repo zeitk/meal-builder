@@ -48,7 +48,8 @@ export default function ServingSizeTable(props: any) {
                         returnKeyType="done" 
                         onSubmitEditing={(value) => newServingSize(value.nativeEvent.text) } 
                         placeholder={(baseServingSize*props.multiplier).toString()}></TextInput>
-            <Text> {unit}</Text>
+            <Text style={{paddingLeft: 3}}> {(unit==='g') ? "grams":unit}</Text>
+            <Text style={styles.helpText}>454g = 1lb</Text>
         </View>
 
     </>
@@ -79,5 +80,10 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: '#dadfe1',
         alignItems: 'center'
+    },
+    helpText: {
+        fontSize: 10,
+        paddingLeft: 110,
+        color: '#adadad'
     }
 })

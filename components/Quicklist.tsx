@@ -66,7 +66,7 @@ export default function Quicklist({ navigation }: any) {
                     <FoodModal 
                         nutrition={viewedFoodNutrition} name={viewedFoodName} cost={viewedFoodCost} id={viewedFoodId} image={viewedFoodImage}  
                         toggle={toggleFoodModal} 
-                        context={"Quicklist"} modalVisible={foodModalVisible} mode={3}></FoodModal>
+                        context={"Quicklist"} modalVisible={foodModalVisible} ></FoodModal>
             </Portal.Host>
         </SafeAreaView>
     </>

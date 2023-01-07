@@ -19,29 +19,38 @@ export default function CostTable(props: any) {
     }, [props])
 
     return<>
-        <View style={{marginTop: 5, marginBottom: 5}}>
-            <Text style={{fontWeight: '500'}}>
-                Cost
-            </Text>
-        </View>
-        <DataTable>
-            <DataTable.Header>
-                <DataTable.Title textStyle={styles.text}>Cost</DataTable.Title>
-                <DataTable.Title textStyle={styles.text}>Unit</DataTable.Title>
-            </DataTable.Header>
+        <View style={styles.overallView}>
+            <View style={{marginTop: 5, marginBottom: 5}}>
+                <Text style={{fontWeight: '500'}}>
+                    Cost
+                </Text>
+            </View>
+            <DataTable>
+                <DataTable.Header>
+                    <DataTable.Title textStyle={styles.text}>Cost</DataTable.Title>
+                    <DataTable.Title textStyle={styles.text}>Unit</DataTable.Title>
+                </DataTable.Header>
 
-            <DataTable.Row>
-                {/* <DataTable.Cell textStyle={styles.text}>{(cost*multiplier).toFixed(2)}</DataTable.Cell>
-                <DataTable.Cell textStyle={styles.text}>{units}</DataTable.Cell> */}
-                <DataTable.Cell textStyle={styles.text}>{((cost*multiplier>100 && units==="US Cents")) ? (cost*multiplier/100).toFixed(2):(cost*multiplier).toFixed(2)}</DataTable.Cell>
-                <DataTable.Cell textStyle={styles.text}>{((cost*multiplier>100 && units==="US Cents")) ? "US Dollars":units}</DataTable.Cell>
-            </DataTable.Row>
-        </DataTable>
+                <DataTable.Row>
+                    {/* <DataTable.Cell textStyle={styles.text}>{(cost*multiplier).toFixed(2)}</DataTable.Cell>
+                    <DataTable.Cell textStyle={styles.text}>{units}</DataTable.Cell> */}
+                    <DataTable.Cell textStyle={styles.text}>{((cost*multiplier>100 && units==="US Cents")) ? (cost*multiplier/100).toFixed(2):(cost*multiplier).toFixed(2)}</DataTable.Cell>
+                    <DataTable.Cell textStyle={styles.text}>{((cost*multiplier>100 && units==="US Cents")) ? "US Dollars":units}</DataTable.Cell>
+                </DataTable.Row>
+            </DataTable>
+        </View>
+
     </>
 }
 
 const styles = StyleSheet.create({
     text: {
         fontSize: 12
+    },
+    overallView: {
+        height: '100%',
+        width: '100%',
+        alignItems: 'center',
+        marginTop: 10
     }
 })

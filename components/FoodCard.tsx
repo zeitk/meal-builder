@@ -24,7 +24,7 @@ export default function FoodCard(props: Food) {
             // location in the quicklist
             const index = props.arrayIndex
 
-            // if item is pressed then we are either removing the item or updating it's quantity
+            // if item is pressed we're either removing the item or updating its quantity
             if (isPressed) {
                 if ((typeof quantity)==="string") props.callback(2, index, quantity)
                 else {                

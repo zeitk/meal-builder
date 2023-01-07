@@ -48,37 +48,42 @@ export default function NutritionTable(props: any) {
         {
         // show 'Loading' text until state is set
         (nutrients.length) ? 
+        
+            <View style={styles.overallView}>
+                <DataTable>
 
-        <DataTable>
-            <DataTable.Header>
-                {
-                    headers.map((header: string, i) => {
-                        if (header==="percentOfDailyNeeds") header="Daily %"
-                        return <DataTable.Title textStyle={styles.header} key={i} numeric={ header==="name" ? false : true}>{ header==="name" ? "Nutrient" : header}</DataTable.Title>
-                    })
-                }
-            </DataTable.Header>
-            
-            {/* the rows should scroll*/}
-            <ScrollView style={(props.isMealView) ? styles.mealView:styles.view}>
-            {
-                // go through the array of nutrients, headers used as indexes to find values
-                nutrients.map((nutrient: any, i: number) => {
-                    return(
-                        <DataTable.Row key={i}>
+                    <View style={styles.headerView}>
+                        <DataTable.Header>
                             {
-                                // have non-name items populate right side of cell to give more space to name
-                                headers.map((header: string, j: number) => {
-                                    if (header==="amount" || header==="percentOfDailyNeeds") return <DataTable.Cell key={j} textStyle={styles.text} numeric={true}>{(nutrient[header]*multiplier).toFixed(2)}</DataTable.Cell>
-                                    else return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true}>{nutrient[header]}</DataTable.Cell>
+                                headers.map((header: string, i) => {
+                                    if (header==="percentOfDailyNeeds") header="Daily %"
+                                    return <DataTable.Title textStyle={styles.header} key={i} numeric={ header==="name" ? false : true}>{ header==="name" ? "Nutrient" : header}</DataTable.Title>
                                 })
                             }
-                        </DataTable.Row>
-                    )
-                })
-            }
-            </ScrollView>
-        </DataTable>
+                        </DataTable.Header>
+                    </View>
+
+                    {/* the rows should scroll*/}
+                    <ScrollView style={(props.isMealView) ? styles.mealView:styles.view}>
+                    {
+                        // go through the array of nutrients, headers used as indexes to find values
+                        nutrients.map((nutrient: any, i: number) => {
+                            return(
+                                <DataTable.Row key={i}>
+                                    {
+                                        // have non-name items populate right side of cell to give more space to name
+                                        headers.map((header: string, j: number) => {
+                                            if (header==="amount" || header==="percentOfDailyNeeds") return <DataTable.Cell key={j} textStyle={styles.text} numeric={true}>{(nutrient[header]*multiplier).toFixed(2)}</DataTable.Cell>
+                                            else return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true}>{nutrient[header]}</DataTable.Cell>
+                                        })
+                                    }
+                                </DataTable.Row>
+                            )
+                        })
+                    }
+                    </ScrollView>
+                </DataTable>
+            </View>
         :
         <View style={styles.loadingView}>
             <Text style={styles.loadingText}>Loading...</Text>
@@ -93,9 +98,15 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize'
     },
     view: {
-        //height: 300,
+        height: '87.5%',
+        width: '100%'
+    },
+    overallView: {
         height: '100%',
         width: '100%'
+    },
+    headerView: {
+        height: '12.5%'
     },
     mealView: {
         height: '100%'
@@ -104,11 +115,12 @@ const styles = StyleSheet.create({
         fontSize: 12
     },
     loadingView: {
-        justifyContent: 'center'
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     loadingText: {
         fontSize: 17,
         lineHeight: 300,
-        fontWeight: '500'
+        fontWeight: '300'
     }
 })

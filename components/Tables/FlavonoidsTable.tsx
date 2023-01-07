@@ -30,40 +30,47 @@ export default function FlavonoidsTable(props: any) {
     }, [props])
 
     return <>
-        <View style={{marginTop: 25, marginBottom: 5}}>
+        <View style={styles.headerView}>
             <Text style={{fontWeight: '500'}}>
                 Flavonoids
             </Text>
         </View>
-        <DataTable>
-            <DataTable.Header>
+
+        <View style={styles.bodyView}>
+            <DataTable>
+
+                <View style={styles.columnHeadersView}>
+                    <DataTable.Header>
+                        {
+                            headers.map((header: string, i) => {
+                                return <DataTable.Title textStyle={styles.header} key={i} numeric={ header==="name" ? false : true }>{ header==="name" ? "Flavonoid": header}</DataTable.Title>
+                            })
+                        }
+                    </DataTable.Header>
+                </View>
+
+                
+                {/* the rows should scroll*/}
+                <ScrollView style={(props.isMealView) ? styles.mealView:styles.scrollView}>
                 {
-                    headers.map((header: string, i) => {
-                        return <DataTable.Title textStyle={styles.header} key={i} numeric={ header==="name" ? false : true }>{ header==="name" ? "Flavonoid": header}</DataTable.Title>
+                    // go through the array of nutrients, headers used as indexes to find values
+                    flavonoids.map((flavonoid: any, i: number) => {
+                        return(
+                            <DataTable.Row key={i}>
+                                {
+                                    // have non-name items populate right side of cell to give more space to name
+                                    headers.map((header: string, j: number) => {
+                                        if (header==="amount") return <DataTable.Cell key={j} textStyle={styles.text} numeric={true}>{(flavonoid[header]*props.multiplier).toFixed(2)}</DataTable.Cell>
+                                        else return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{(header==="Daily %") ? flavonoid["percentOfDailyNeeds"]:flavonoid[header]}</DataTable.Cell>
+                                    })
+                                }
+                            </DataTable.Row>
+                        )
                     })
                 }
-            </DataTable.Header>
-            
-            {/* the rows should scroll*/}
-            <ScrollView style={(props.isMealView) ? styles.mealView:styles.view}>
-            {
-                // go through the array of nutrients, headers used as indexes to find values
-                flavonoids.map((flavonoid: any, i: number) => {
-                    return(
-                        <DataTable.Row key={i}>
-                            {
-                                // have non-name items populate right side of cell to give more space to name
-                                headers.map((header: string, j: number) => {
-                                    if (header==="amount") return <DataTable.Cell key={j} textStyle={styles.text} numeric={true}>{(flavonoid[header]*props.multiplier).toFixed(2)}</DataTable.Cell>
-                                    else return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{(header==="Daily %") ? flavonoid["percentOfDailyNeeds"]:flavonoid[header]}</DataTable.Cell>
-                                })
-                            }
-                        </DataTable.Row>
-                    )
-                })
-            }
-            </ScrollView>
-        </DataTable>
+                </ScrollView>
+            </DataTable>
+        </View>
     </>
 }
 
@@ -72,8 +79,24 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textTransform: 'capitalize'
     },
-    view: {
-        height: 255,
+    headerView: {
+        height: '5%',
+        width: '100%',
+        alignItems: 'center'
+    },
+    bodyView: {
+        height: '95%',
+        width: '100%',
+        alignItems: 'center'
+    },
+    columnHeadersView: {
+        height: '17.5%',
+        width: '100%',
+        alignItems: 'center'
+    },
+    scrollView: {
+        height: '82.5%',
+        width: '100%'
     },
     text: {
         fontSize: 12

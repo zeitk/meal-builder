@@ -37,39 +37,43 @@ export default function PropertiesTable(propertiesProps: any) {
     }, [properties])
 
     return <>
-        <View style={{marginTop: 50, marginBottom: 5}}>
-            <Text style={{fontWeight: '500'}}>
-                Properties
-            </Text>
-        </View>
-        <DataTable>
-            <DataTable.Header>
+
+        <View style={styles.overallView}>
+            <View style={{marginTop: 50, marginBottom: 5}}>
+                <Text style={{fontWeight: '500'}}>
+                    Properties
+                </Text>
+            </View>
+            <DataTable>
+                <DataTable.Header>
+                    {
+                        headers.map((header: string, i) => {
+                            return <DataTable.Title textStyle={styles.header} key={i} numeric={ header==="name" ? false : true }>{ header==="name" ? "Property": header}</DataTable.Title>
+                        })
+                    }
+                </DataTable.Header>
+                
+                {/* the rows should scroll*/}
+                <View>
                 {
-                    headers.map((header: string, i) => {
-                        return <DataTable.Title textStyle={styles.header} key={i} numeric={ header==="name" ? false : true }>{ header==="name" ? "Property": header}</DataTable.Title>
+                    // go through the array of nutrients, headers used as indexes to find values
+                    properties.map((property: any, i: number) => {
+                        return(
+                            <DataTable.Row key={i}>
+                                {
+                                    // have non-name items populate right side of cell to give more space to name
+                                    headers.map((header: string, j: number) => {
+                                        return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{ header==="amount" ? Number(property[header]).toFixed(2) : property[header]}</DataTable.Cell>
+                                    })
+                                }
+                            </DataTable.Row>
+                        )
                     })
                 }
-            </DataTable.Header>
-            
-            {/* the rows should scroll*/}
-            <View>
-            {
-                // go through the array of nutrients, headers used as indexes to find values
-                properties.map((property: any, i: number) => {
-                    return(
-                        <DataTable.Row key={i}>
-                            {
-                                // have non-name items populate right side of cell to give more space to name
-                                headers.map((header: string, j: number) => {
-                                    return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{ header==="amount" ? Number(property[header]).toFixed(2) : property[header]}</DataTable.Cell>
-                                })
-                            }
-                        </DataTable.Row>
-                    )
-                })
-            }
-            </View>
-        </DataTable>
+                </View>
+            </DataTable>
+        </View>
+
     </>
 }
 
@@ -80,5 +84,10 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 12
+    },
+    overallView: {
+        height: '100%',
+        width: '100%',
+        alignItems: 'center'
     }
 })

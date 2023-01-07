@@ -31,29 +31,32 @@ export default function CaloricBreakdownTable(caloricBreakdownProps: any) {
     }, [caloricBreakdown])
 
     return <>
-        <View style={{marginTop: 40, marginBottom: 5}}>
-            <Text  style={{fontWeight: '500'}}>
-                Caloric Breakdown
-            </Text>
+        <View style={styles.overallView}>
+            <View style={{marginTop: 40, marginBottom: 5}}>
+                <Text  style={{fontWeight: '500'}}>
+                    Caloric Breakdown
+                </Text>
+            </View>
+            <DataTable>
+                <DataTable.Header>
+                    {
+                        headers.map((header: string, i) => {
+                            return <DataTable.Title textStyle={styles.header} key={i} numeric={false}>{"% " + header.slice(7,99)}</DataTable.Title>
+                        })
+                    }
+                </DataTable.Header>
+
+                <DataTable.Row>
+                    {
+                        headers.map((header: string, j: number) => {
+                            return <DataTable.Cell key={j} textStyle={styles.text} numeric={false}>{caloricBreakdown[header]}</DataTable.Cell>
+                        })
+                    }
+                </DataTable.Row>
+
+            </DataTable>
         </View>
-        <DataTable>
-            <DataTable.Header>
-                {
-                    headers.map((header: string, i) => {
-                        return <DataTable.Title textStyle={styles.header} key={i} numeric={false}>{"% " + header.slice(7,99)}</DataTable.Title>
-                    })
-                }
-            </DataTable.Header>
 
-            <DataTable.Row>
-                {
-                    headers.map((header: string, j: number) => {
-                        return <DataTable.Cell key={j} textStyle={styles.text} numeric={false}>{caloricBreakdown[header]}</DataTable.Cell>
-                    })
-                }
-            </DataTable.Row>
-
-        </DataTable>
     </>
 }
 
@@ -63,5 +66,10 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 12
+    },
+    overallView: {
+        height: '100%',
+        width: '100%',
+        alignItems: 'center'
     }
 })

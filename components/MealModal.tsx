@@ -7,8 +7,9 @@ import CurrentMealContext from '../context/CurrentMeal';
 import MealListContext from '../context/MealList';
 import QuicklistContext from '../context/QuicklistContext';
 import FoodCard from './FoodCard';
-import MealCard from './MealCard';
 import { Meal } from '../interfaces/Interfaces'
+import Search from './Search';
+import SearchFromMeals from './SearchFromMeals';
 
 export default function MealModal({ navigation, route }: any,props: any) {
 
@@ -16,8 +17,12 @@ export default function MealModal({ navigation, route }: any,props: any) {
     const [quicklist, setQuicklist] = useContext(QuicklistContext);
     const [currentMeal, setCurrentMeal] = useState<any>({});
     const [mealList, setMealList] = useContext(MealListContext);
+    const [page, setPage] = useState<number>(1);
     
     useEffect(() =>{
+
+        setPage(1);
+
         // if list is empty set Id to 1
         // else set id to the last id in array plus 1, in the case of deletion
         let mealId;
@@ -33,6 +38,10 @@ export default function MealModal({ navigation, route }: any,props: any) {
             data: {}
         })
     },[])
+
+    function changePage() {
+        (page===1) ? setPage(2):setPage(1)
+    }
 
     function editMeal(mode: number, index: number, quantity: any) {
         
@@ -80,8 +89,8 @@ export default function MealModal({ navigation, route }: any,props: any) {
     }
 
     function saveMealData() {
-        // this tag combines the nutritional data from each food into a single object
 
+        // this tag combines the nutritional data from each food into a single object
         let foods = currentMeal["foods"]
 
         let overallNutrients: any = {}, overallCost: any = {}, overallFlavonoids: any = {}
@@ -245,81 +254,139 @@ export default function MealModal({ navigation, route }: any,props: any) {
 
     return (
         <View style={styles.modal}>
-            { (quicklist.length>0) ?
-                <View style={styles.inputScrollView}>
-                    <View style={styles.textInputView}>
-                        <TextInput 
-                                selectionColor="#f7f7f7" 
-                                placeholderTextColor="#adadad"
-                                style={styles.textInput} 
-                                returnKeyType="done"  
-                                placeholder={"New Meal"}
-                                onSubmitEditing={(value) => newMealName(value.nativeEvent.text) }>
-                        </TextInput>
-                    </View>
-                    <ScrollView style={styles.scrollview}>
-                    <View style={styles.exampleBanner}>
-                        <Text style={styles.exampleBannerText}>My Quicklist</Text>
-                    </View> 
-                    {
-                        quicklist.map((food: any, i: number) => {
-                            return <FoodCard key={i} arrayIndex={i} id={food["id"]} image={food["image"]} name={food["name"]} callback={editMeal} mode={1}></FoodCard>
-                        })
-                    }
-                    </ScrollView>
-                </View>
-                :
-                <View style={styles.emptyQuicklist}>
-                    <Text style={styles.text}>Add items to your Quicklist in Search</Text>
-                    <Button children="Search" textColor="#2774AE" labelStyle={styles.buttonText} onPress={()=>{
-                        navigation.reset({
-                            index: 0,
-                            routes: [{ name: 'Search' }],
-                          });
-                        }}></Button>
-                </View>
-            }
-            
-            <View style={styles.bottomButtonsView}>
-                { (quicklist.length>0) ?
-                    <View style={styles.closeSaveButtons}>
-                        <Button children="Close" textColor="#c5050c" labelStyle={styles.buttonText} style={styles.dualButtons} onPress={()=> closeModal(1)}></Button>
-                        <Button children="Save" textColor="#22a811" labelStyle={styles.buttonText} style={styles.dualButtons} onPress={()=> closeModal(2)}></Button>
+            {/* show a different view depending on whether Quicklist is populated */}
+            { (quicklist.length>0) 
+                
+                ?
+
+                <View style={styles.overallView}>
+                    { (page===1) ?
+                    <View style={styles.inputScrollView}>
+                        <View style={styles.textInputView}>
+                            <TextInput 
+                                    selectionColor="#f7f7f7" 
+                                    placeholderTextColor="#adadad"
+                                    style={styles.textInput} 
+                                    returnKeyType="done"  
+                                    placeholder={"New Meal"}
+                                    onSubmitEditing={(value) => newMealName(value.nativeEvent.text) }>
+                            </TextInput>
+                        </View>
+                        <ScrollView style={styles.scrollview}>
+                        <View style={styles.exampleBanner}>
+                            <Text style={styles.exampleBannerText}>My Quicklist</Text>
+                        </View> 
+                        {
+                            quicklist.map((food: any, i: number) => {
+                                return <FoodCard key={i} arrayIndex={i} id={food["id"]} image={food["image"]} name={food["name"]} callback={editMeal} mode={1}></FoodCard>
+                            })
+                        }
+                        </ScrollView>
                     </View>
                     :
-                    <Button children="Close" textColor="#2774AE" labelStyle={styles.buttonText} style={styles.singleButton} onPress={() => navigation.goBack()}></Button>
-                }        
-            </View>
+                    <View style={styles.inputScrollView}>
+                        <View style={styles.textInputView}>
+                                <TextInput 
+                                        selectionColor="#f7f7f7" 
+                                        placeholderTextColor="#adadad" 
+                                        style={styles.textInput} 
+                                        returnKeyType="done"  
+                                        placeholder={"New Meal"}
+                                        onSubmitEditing={(value) => newMealName(value.nativeEvent.text) }>
+                                </TextInput>
+                        </View>
+                        <View style={{height: '90%'}}>
+                            <SearchFromMeals></SearchFromMeals>
+                        </View>
+                    </View>
+                    }
+
+                    <View style={styles.bottomButtonsView}>
+                        <View style={styles.changeSearchButtonView}>
+                            <Button children={(page===1) ? "Search all foods":"Quicklist"} textColor="#2774AE" labelStyle={styles.buttonText} style={styles.singleButton} onPress={changePage}></Button>
+                        </View>
+                        <View style={styles.closeButtonsView}>
+                            <View style={styles.closeSaveButtons}>
+                                <Button children="Close" textColor="#c5050c" labelStyle={styles.buttonText} style={styles.twinButtons} onPress={()=> closeModal(1)}></Button>
+                                <Button children="Save" textColor="#22a811" labelStyle={styles.buttonText} style={styles.twinButtons} onPress={()=> closeModal(2)}></Button>
+                            </View>
+                        </View>
+                    </View>
+
+                </View>
+
+                :
+
+                // if the Quicklist is empty, lead user to Search
+                <View>
+                    <View style={styles.emptyQuicklist}>
+                            <Text style={styles.text}>Add items to your Quicklist in Search</Text>
+                            <Button children="Search" textColor="#2774AE" labelStyle={styles.buttonText} onPress={()=>{
+                                navigation.reset({
+                                    index: 0,
+                                    routes: [{ name: 'Search' }],
+                                });
+                                }}></Button>
+                    </View>
+
+                    <View style={styles.altBottomButtonsView}>
+                        <Button children="Close" textColor="#2774AE" labelStyle={styles.buttonText} style={styles.singleButton} onPress={() => navigation.goBack()}></Button>
+                    </View>
+                </View>
+            }
+
         </View>     
     )
 }
 
 const styles = StyleSheet.create({
+    overallView: {
+        height: '100%',
+        width: '100%'
+    },
     scrollview: {
         height: '90%'
     },
     modal: {
         alignItems: 'center',
-        backgroundColor: '#f7f7f7',
+        backgroundColor: 'white',
     },
     inputScrollView:{
-        height: '85%'
+        height: '82.5%'
     },
     bottomButtonsView: {
-        height: '15%',
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        alignItems: 'center'
+        height: '17.5%',
+        width: '100%'
+    },
+    changeSearchButtonView: {
+        height: '40%',
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f7f7f7'
+    },
+    closeButtonsView: {
+        height: '60%',
+        width: '100%',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+    altBottomButtonsView: {
+        height: '10%',
+        width: '100%',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
     },
     closeSaveButtons: {
         flexDirection: 'row',
+        paddingTop: 7.5
     },
     header: {
         textTransform: 'capitalize',
         fontSize: 24
     },
     emptyQuicklist: {
-        height: '82%',
+        height: '90%',
         justifyContent: 'center'
     },
     text: {
@@ -328,9 +395,9 @@ const styles = StyleSheet.create({
         paddingBottom: 10
     },
     singleButton: {
-        width: 300
+        width: 300,
     },
-    dualButtons: {
+    twinButtons: {
         width: 170
     },
     buttonText: {

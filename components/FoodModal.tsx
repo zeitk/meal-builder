@@ -41,12 +41,15 @@ export default function FoodModal(props: any) {
     }
 
     function isFoodInQuicklist(foodId: number) {
+        let found = false;
         quicklist.forEach((food: any) => {
             if (food["id"]===foodId) {
                 setIsInQuicklist(true)
+                found = true;
                 return
             }
         })
+        if (!found) setIsInQuicklist(false);
     }
 
     // add this item to the quicklist
@@ -72,7 +75,7 @@ export default function FoodModal(props: any) {
         ])
         setIsInQuicklist(true);
 
-        Alert.alert("Added", capitalize(foodObject["name"])+" has been added to your Quicklist")
+        Alert.alert("Added", capitalize(props.name)+" has been added to your Quicklist")
     }
 
     function removeFromQuicklist() {
@@ -80,7 +83,10 @@ export default function FoodModal(props: any) {
         setQuicklist(updatedQuicklist)
 
         // in Search the buttons should switch, in Quicklist the modal should close
-        if (props.context==="Search") setIsInQuicklist(false)
+        if (props.context==="Search") {
+            Alert.alert("Removed", capitalize(props.name)+" has been removed from your Quicklist")
+            setIsInQuicklist(false)
+        }
         if (props.context==="Quicklist") toggleModal()
     }
 
@@ -113,63 +119,68 @@ export default function FoodModal(props: any) {
 
     return (
         <Portal>
-            <Modal visible={props.modalVisible} onDismiss={toggleModal}>
-                <View style={styles.modal}>
+            <Modal visible={props.modalVisible} style={styles.modal} onDismiss={toggleModal}>
+                <View style={styles.containerView}>
                     {
                         (page === 1) &&
                         (
                             <View style={styles.upperView}>
-                                <Text style={styles.header}>{props.name}</Text>
-                                <ServingSizeTable servingSizeProps={props.nutrition["weightPerServing"]} newMultiplier={newMultiplier} multiplier={multiplier}></ServingSizeTable>
-                                <NutritionTable nutrition={props.nutrition["nutrients"]} multiplier={multiplier}></NutritionTable>
+                                <View style={styles.headerView}>
+                                    <Text style={styles.header}>{props.name}</Text>
+                                </View>
+                                <View style={styles.servingSizeView}>
+                                    <ServingSizeTable servingSizeProps={props.nutrition["weightPerServing"]} newMultiplier={newMultiplier} multiplier={multiplier}></ServingSizeTable>
+                                </View>
+                                <View style={styles.nutritionView}>
+                                    <NutritionTable nutrition={props.nutrition["nutrients"]} multiplier={multiplier}></NutritionTable>
+                                </View>
                             </View>
                         ) 
                     }
-                    {/* {
-                        (page === 1) &&
-                        (
-                            <ServingSizeTable servingSizeProps={props.nutrition["weightPerServing"]} newMultiplier={newMultiplier} multiplier={multiplier}></ServingSizeTable>
-                        )
-                    }
-                    {
-                        (page === 1) &&
-                        (
-                            <NutritionTable nutrition={props.nutrition["nutrients"]} multiplier={multiplier}></NutritionTable>
-                        )
-                    } */}
                     {
                         (page == 2) &&
                         (
-                            <CaloricBreakdownTable caloricBreakdownProps={props.nutrition["caloricBreakdown"]}></CaloricBreakdownTable>
-                        )
-                    }
-                    {
-                        (page === 2) &&
-                        (
-                            <PropertiesTable propertiesProps={props.nutrition["properties"]}></PropertiesTable>
+                            <View style={styles.upperView}>
+                                <View style={styles.headerView}>
+                                    <Text style={styles.header}>{props.name}</Text>
+                                </View>
+                                <View style={styles.caloricBreakdownView}>
+                                    <CaloricBreakdownTable caloricBreakdownProps={props.nutrition["caloricBreakdown"]}></CaloricBreakdownTable>
+                                </View>
+                                <View style={styles.propertiesView}>
+                                    <PropertiesTable propertiesProps={props.nutrition["properties"]}></PropertiesTable>
+                                </View>
+                            </View>
+                            
                         )
                     }
                     {
                         (page == 3) &&
                         (
-                            <CostTable cost={props.cost} multiplier={multiplier}></CostTable>
-                        )
-                    }
-                    {
-                        (page === 3) && 
-                        (
-                            <FlavonoidsTable flavonoidsProps={props.nutrition["flavonoids"]} multiplier={multiplier}></FlavonoidsTable>
+                            <View style={styles.upperView}>
+                                <View style={styles.headerView}>
+                                    <Text style={styles.header}>{props.name}</Text>
+                                </View>
+                                <View style={styles.costView}>
+                                    <CostTable cost={props.cost} multiplier={multiplier}></CostTable>
+                                </View>
+                                <View style={styles.flavonoidsView}>
+                                    <FlavonoidsTable flavonoidsProps={props.nutrition["flavonoids"]} multiplier={multiplier}></FlavonoidsTable>
+                                </View>
+                            </View>
+                           
                         )
                     }
 
-                    <View style={styles.pageButtons}>
+                    <View style={styles.pageButtonsView}>
                         <Button textColor="#2774AE" children="Prev" onPress={prevPage} disabled={page===1} labelStyle={styles.pageButtonText}></Button>
                         <View style={styles.pageText}>
                             <Text style={styles.text}>{page} of 3</Text>
                         </View>
                         <Button textColor="#2774AE" children="Next" onPress={nextPage} disabled={page===3} labelStyle={styles.pageButtonText}></Button>
                     </View>
-                    <View style={styles.bottomButtons}>
+                    <View style={styles.bottomButtonsView}>
+                        <View style={styles.multipurposeButton}>
                         { (props.context==="Search" && isInQuicklist) &&
                             <Button textColor="#c5050c" children="Remove from Quicklist" onPress={removeFromQuicklist} labelStyle={styles.buttonText}></Button>
                         }
@@ -180,9 +191,12 @@ export default function FoodModal(props: any) {
                             <Button textColor="#c5050c" children="Remove from Meal" onPress={removeFromMeal} labelStyle={styles.buttonText}></Button>
                         }
                         { (props.context==="Quicklist") &&
-                            <Button textColor="#c5050c" style={styles.multipurposeButton} children="Remove from Quicklist" onPress={removeFromQuicklist} labelStyle={styles.buttonText}></Button>
-                        }
-                        <Button textColor='#c5050c' style={styles.closeButton} children="Close" onPress={toggleModal} labelStyle={styles.buttonText}></Button>
+                            <Button textColor="#c5050c" children="Remove from Quicklist" onPress={removeFromQuicklist} labelStyle={styles.buttonText}></Button>
+                        }                            
+                        </View>
+                        <View style={styles.closeButton}>
+                            <Button textColor='#c5050c'  children="Close" onPress={toggleModal} labelStyle={styles.buttonText}></Button>
+                        </View>
                     </View>
                 </View>
             </Modal>      
@@ -191,85 +205,80 @@ export default function FoodModal(props: any) {
 }
 
 const styles = StyleSheet.create({
+
+    // view styles
     modal: {
+        margin: '4%',
+        marginTop: '30%',
+        height: '80%',
+    },
+    containerView: {
         alignItems: 'center',
         height: '100%',
         padding: 10,
-        marginHorizontal: 15,
         paddingTop: 15,
         backgroundColor: '#f7f7f7',
         borderColor: '#282728',
         borderWidth: 3,
         borderRadius: 15
     },
-    bottomButtons: {
-        flexDirection: 'row',
-        alignSelf: 'flex-start',
-        position: 'absolute',
-        //left: 15,
-        bottom: 8
+    upperView: {
+        height: '85%',
+        width: '100%',
+        alignItems: 'center'
     },
-    pageButtons: {
+    headerView: {
+        height: '5%',
+        width: '100%',
+        alignItems: 'center'
+    },
+    servingSizeView: {
+        height: '17.5%',
+        width: '100%',
+        alignItems: 'center'
+    },
+    nutritionView: {
+        height: '77.5%',
+        width: '100%',
+    },
+    caloricBreakdownView: {
+        height: '35%',
+        width: '100%',
+    },
+    propertiesView: {
+        height: '60%',
+        width: '100%',
+        alignItems: 'flex-start'
+    },
+    costView: {
+        height: '27.5%',
+        width: '100%',
+    },
+    flavonoidsView: {
+        height: '67.5%',
+        width: '100%',
+    },
+    pageButtonsView: {
+        height: '9%',
         flexDirection: 'row',
-        alignSelf: 'center',
-        position: 'absolute',
         paddingLeft: 95,
-        bottom: 50,
         width: '100%',
         paddingTop: 10,
         borderTopWidth: 1,
         borderColor: '#dadfe1',
     },
+    bottomButtonsView: {
+        height: '11%',
+        flexDirection: 'row',
+    },
     closeButton: {
-        //position: 'absolute',
-        left: '220%'
+        width: '40%',
     },
     multipurposeButton: {
-        //position: 'absolute',
-        left: '25%'
+        width: '60%'
     },
-    upperView: {
-        height: '60%',
-        width: '100%',
-        alignItems: 'center'
-    },
-    // modal: {
-    //     alignItems: 'center',
-    //     height: 600,
-    //     padding: 10,
-    //     margin: 15,
-    //     paddingTop: 15,
-    //     backgroundColor: '#f7f7f7',
-    //     borderColor: '#282728',
-    //     borderWidth: 3,
-    //     borderRadius: 15
-    // },
-    // bottomButtons: {
-    //     flexDirection: 'row',
-    //     alignSelf: 'flex-start',
-    //     position: 'absolute',
-    //     //left: 15,
-    //     bottom: 8
-    // },
-    // pageButtons: {
-    //     flexDirection: 'row',
-    //     alignSelf: 'center',
-    //     position: 'absolute',
-    //     paddingLeft: 95,
-    //     bottom: 50,
-    //     width: '100%',
-    //     paddingTop: 10,
-    //     borderTopWidth: 1,
-    //     borderColor: '#dadfe1',
-    // },
-    // closeButton: {
-    //     //position: 'absolute',
-    //     left: '220%'
-    // },
-    // multipurposeButton: {
-    //     //position: 'absolute',
-    //     left: '25%'
-    // },
+
+    // text styles
     buttonText: {
         fontSize: 16
     }, 

@@ -5,7 +5,6 @@ import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard, Text 
 import { Button, Portal } from "react-native-paper";
 import { Feather, Entypo } from "@expo/vector-icons";
 
-
 import FoodCard from "./FoodCard";
 import FoodModal from "./FoodModal";
 
@@ -30,7 +29,7 @@ const examples: string[] = [
     "Bread"
 ]
 
-export default function Search({ navigation, route }: any, props: any) {
+export default function SearchFromMeals(props: any) {
 
     // search related states
     const [items, setItems] = useState([]);
@@ -57,15 +56,10 @@ export default function Search({ navigation, route }: any, props: any) {
         const searchExample = examples[Math.floor(Math.random()*examples.length)]
         searchItems(searchExample)
         setExampleBanner(searchExample)
-
-        // close modal if it's open
-        navigation.addListener('tabPress', () => {
-            setModalVisible(false)
-        });
         
         // set searchbar text placeholder
         setSlogan(slogans[(Math.floor(Math.random()*slogans.length))])
-    },[navigation])
+    },[])
 
     const beginSearch = () => {
         // don't search if there's nothing to search for, or if we just pressed cancel
@@ -178,6 +172,7 @@ export default function Search({ navigation, route }: any, props: any) {
                         value={searchString}
                         onChangeText={setSearchString}
                         placeholder={slogan}
+                        placeholderTextColor={'#646569'}
                         returnKeyType="search"
                         onEndEditing={beginSearch}
                         onFocus={() => { setPressed(true) }} >
@@ -243,10 +238,10 @@ export default function Search({ navigation, route }: any, props: any) {
 const styles = StyleSheet.create({
     safeView: {
         flex: 1,
-        backgroundColor: '#f9f9f9'
+        backgroundColor: '#f7f7f7'
     },
     scrollView: {
-        backgroundColor: '#dadfe1',
+        backgroundColor: 'white',
         height: '100%',
         paddingTop: 5
     },
@@ -256,7 +251,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         flexDirection: 'row',
-        height: 60
+        height: 60,
     },
     input: {
         fontSize: 20,

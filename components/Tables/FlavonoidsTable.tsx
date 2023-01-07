@@ -18,6 +18,7 @@ export default function FlavonoidsTable(props: any) {
         
         // save header titles
         for (let header in flavonoidsProps[0]) {
+            if (header==="percentOfDailyNeeds") header="Daily %"
             paramHeaders.push(header);
         }
 
@@ -54,7 +55,7 @@ export default function FlavonoidsTable(props: any) {
                                 // have non-name items populate right side of cell to give more space to name
                                 headers.map((header: string, j: number) => {
                                     if (header==="amount") return <DataTable.Cell key={j} textStyle={styles.text} numeric={true}>{(flavonoid[header]*props.multiplier).toFixed(2)}</DataTable.Cell>
-                                    else return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{flavonoid[header]}</DataTable.Cell>
+                                    else return <DataTable.Cell key={j} textStyle={styles.text} numeric={ header==="name" ? false : true }>{(header==="Daily %") ? flavonoid["percentOfDailyNeeds"]:flavonoid[header]}</DataTable.Cell>
                                 })
                             }
                         </DataTable.Row>

@@ -20,22 +20,21 @@ export default function MealCard(props: any, { navigation }: any ) {
             newImages.push(food["image"])
         })
         setImages(newImages)
-    },[])
+    },[mealList])
 
     function showMoreInfo() {
         props.navigation.navigate('MealInfo', { id: props["id"] })
     }
 
     function deleteMeal() {
-        const idToDelete = props["id"]
-
         setMeallist(
-            mealList.filter((meal:any) => meal["id"] !== idToDelete)
+            mealList.filter((meal:any) => meal["id"] !== props["id"])
         );
-
     }
 
     function deleteButton() {
+        
+        // give prompt before deleting meal
         Alert.alert(
             'Delete Meal',
             'Are you sure you want to delete this meal?',

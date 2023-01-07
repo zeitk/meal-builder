@@ -55,20 +55,29 @@ export default function FoodCard(props: Food) {
                         <View style={styles.imageView}>
                             <Image source={{ uri: imageUrl + imageSize + "/" + props.image }} style={styles.image}></Image>
                         </View>
-                        <View style={(isPressed) ? styles.pressedTitleView:styles.unpressedTitleView}>
+                        <View style={(isPressed || props.mode===2) ? styles.pressedTitleView:styles.unpressedTitleView}>
                             <Text style={styles.title}>{props.name}</Text>
                         </View>
-                        { isPressed && 
-                            <View style={styles.quantityInputView}>
+                        { (isPressed || props.mode===2) && 
+                            <View style={styles.quantityView}>
                                 <Text style={styles.quantityText}>Quantity: </Text>
-                                <TextInput  
+                                { (props.mode===2) &&
+                                    <Text>
+                                        {(Number(props.quantity)).toFixed(0)}g
+                                    </Text>
+                                }
+                                { (props.mode===1) &&
+                                    <TextInput  
                                         style={styles.quantityTextInput}
                                         selectionColor="#f7f7f7"  
+                                        placeholderTextColor="#adadad"
                                         keyboardType={"numeric"} 
                                         returnKeyType="done" 
                                         onSubmitEditing={(value) => showMoreInfo(value.nativeEvent.text) } 
-                                        placeholder={"150"}>
-                                </TextInput>
+                                        placeholder={"150g"}>
+                                    </TextInput>
+                                }
+
                             </View>
                         }
                     </Card.Content>
@@ -130,7 +139,7 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         alignItems: 'center'
     },
-    quantityInputView: {
+    quantityView: {
         width: '35%',
         justifyContent: 'center',
         alignItems: 'center'

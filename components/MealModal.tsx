@@ -47,7 +47,7 @@ export default function MealModal({ navigation, route }: any,props: any) {
             });
         }
 
-        // adding a food
+        // adding a food`
         else if (mode === 2 && quantity === -1) {
             selectedFood["multiplier"]=1
             selectedFood["quantity"]=selectedFood["weightPerServing"]["amount"]
@@ -254,7 +254,6 @@ export default function MealModal({ navigation, route }: any,props: any) {
                                 style={styles.textInput} 
                                 returnKeyType="done"  
                                 placeholder={"New Meal"}
-                                
                                 onSubmitEditing={(value) => newMealName(value.nativeEvent.text) }>
                         </TextInput>
                     </View>

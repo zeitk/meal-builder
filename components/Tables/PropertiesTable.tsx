@@ -8,7 +8,6 @@ export default function PropertiesTable(propertiesProps: any) {
     // states
     const [properties, setProperties] = useState<any>([]);
     const [headers, setHeaders] = useState<string[]>([]);
-    const [total, setTotal] = useState(0);
 
     useEffect(() => {
 
@@ -32,7 +31,6 @@ export default function PropertiesTable(propertiesProps: any) {
             // sort by name of property
             propertiesProps[index].sort((a: any, b: any) => a.name.localeCompare(b.name));
             setProperties(propertiesProps[index]);
-            setTotal(propertiesProps[index].length);
             setHeaders(paramHeaders);
         }
 

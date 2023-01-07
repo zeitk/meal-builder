@@ -18,52 +18,18 @@ export default function FoodModal(props: any) {
     const [page, setPage] = useState<number>(1);
     const [quicklist, setQuicklist] = useContext(QuicklistContext);
     const [multiplier, setMultiplier] = useState<number>(1);
+    const [isInQuicklist, setIsInQuicklist] = useState<Boolean>(false);
+
+    // re-render when new food is selected
+    useEffect(() => {
+        isFoodInQuicklist(props.id);
+        setPage(1);
+        (props.context==="MealInfo") ? setMultiplier(props.servings["multiplier"]):setMultiplier(1);
+    }, [props.name])
 
     // callback to hide modal
     function toggleModal() {
         props.toggle();
-    }
-
-    // add this item to the quicklist
-    function addToQuicklist() {
-
-        // deep copy current food
-        let foodObject = JSON.parse(JSON.stringify(props.nutrition))
-        foodObject["cost"] = props.cost;
-        foodObject["name"] = props.name;
-        foodObject["image"] = props.image
-        foodObject["id"] = props.id;
-
-        // don't store the same item twice
-        let found = false;
-        quicklist.forEach((foodItem: any) => {
-            if (foodItem["id"]===foodObject["id"])  {
-                found = true;
-                return
-            }
-        });
-        if (found) {
-            Alert.alert("Already Added", capitalize(foodObject["name"])+" is already in your Quicklist")
-            return
-        }
-
-        setQuicklist([
-            ...quicklist,
-            foodObject
-        ])
-
-        Alert.alert("Added", capitalize(foodObject["name"])+" has been added to your Quicklist")
-    }
-
-    function capitalize(input: string) {
-        let str = input;
-        str=str.slice(0,1).toUpperCase()+str.slice(1,99);
-
-        for (let i=0; i < str.length; i++) {
-             if (str[i-1]===' ') str=str.slice(0,i)+str.slice(i,i+1).toUpperCase()+str.slice(i+1,99)
-        }
-        
-        return(str)
     }
 
     function nextPage() {
@@ -74,16 +40,76 @@ export default function FoodModal(props: any) {
         if (page > 1) setPage(page - 1)
     }
 
-    // set new serving size
-    function newMultiplier(multiplier: number) {
-        setMultiplier(multiplier);
+    function isFoodInQuicklist(foodId: number) {
+        quicklist.forEach((food: any) => {
+            if (food["id"]===foodId) {
+                setIsInQuicklist(true)
+                return
+            }
+        })
     }
 
-    // re-render when new food is selected
-    useEffect(() => {
-        setPage(1)
-        setMultiplier(1);
-    }, [props.name])
+    // add this item to the quicklist
+    function addToQuicklist() {
+
+        // deep copy current food to prevent pointer issues
+        let foodObject = JSON.parse(JSON.stringify(props.nutrition))
+        foodObject["cost"] = props.cost;
+        foodObject["name"] = props.name;
+        foodObject["image"] = props.image
+        foodObject["id"] = props.id;
+
+        // don't store the same item twice
+        quicklist.forEach((foodItem: any) => {
+            if (foodItem["id"]===foodObject["id"])  {
+                return
+            }
+        });
+        
+        setQuicklist([
+            ...quicklist,
+            foodObject
+        ])
+        setIsInQuicklist(true);
+
+        Alert.alert("Added", capitalize(foodObject["name"])+" has been added to your Quicklist")
+    }
+
+    function removeFromQuicklist() {
+        const updatedQuicklist = quicklist.filter((food: any) => food["id"] !== props.id)
+        setQuicklist(updatedQuicklist)
+
+        // in Search the buttons should switch, in Quicklist the modal should close
+        if (props.context==="Search") setIsInQuicklist(false)
+        if (props.context==="Quicklist") toggleModal()
+    }
+
+    function removeFromMeal() {
+        props.editMealFoods(-1)
+    }
+
+    function capitalize(input: string) {
+        let editedString = input;
+        const stringLength = input.length;
+        editedString=editedString.slice(0,1).toUpperCase()+editedString.slice(1,stringLength);
+
+        for (let i=1; i < editedString.length; i++) {
+             if (editedString[i-1]===' ') editedString=editedString.slice(0,i)+editedString.slice(i,i+1).toUpperCase()+editedString.slice(i+1,stringLength)
+        }
+        
+        return(editedString)
+    }
+
+    // set new serving size
+    function newMultiplier(multiplier: number) {
+
+        setMultiplier(multiplier);
+
+        // MealInfo needs to send to callback function to update the meal, otherwise only update locally
+        if (props.context==="MealInfo") {
+            props.editMealFoods(multiplier)
+        }
+    }
 
     return (
         <Portal>
@@ -92,11 +118,14 @@ export default function FoodModal(props: any) {
                     {
                         (page === 1) &&
                         (
-                            <Text style={styles.header}>{props.name}</Text>
-                        )
+                            <View style={styles.upperView}>
+                                <Text style={styles.header}>{props.name}</Text>
+                                <ServingSizeTable servingSizeProps={props.nutrition["weightPerServing"]} newMultiplier={newMultiplier} multiplier={multiplier}></ServingSizeTable>
+                                <NutritionTable nutrition={props.nutrition["nutrients"]} multiplier={multiplier}></NutritionTable>
+                            </View>
+                        ) 
                     }
-                    
-                    {
+                    {/* {
                         (page === 1) &&
                         (
                             <ServingSizeTable servingSizeProps={props.nutrition["weightPerServing"]} newMultiplier={newMultiplier} multiplier={multiplier}></ServingSizeTable>
@@ -107,7 +136,7 @@ export default function FoodModal(props: any) {
                         (
                             <NutritionTable nutrition={props.nutrition["nutrients"]} multiplier={multiplier}></NutritionTable>
                         )
-                    }
+                    } */}
                     {
                         (page == 2) &&
                         (
@@ -132,6 +161,7 @@ export default function FoodModal(props: any) {
                             <FlavonoidsTable flavonoidsProps={props.nutrition["flavonoids"]} multiplier={multiplier}></FlavonoidsTable>
                         )
                     }
+
                     <View style={styles.pageButtons}>
                         <Button textColor="#2774AE" children="Prev" onPress={prevPage} disabled={page===1} labelStyle={styles.pageButtonText}></Button>
                         <View style={styles.pageText}>
@@ -140,8 +170,19 @@ export default function FoodModal(props: any) {
                         <Button textColor="#2774AE" children="Next" onPress={nextPage} disabled={page===3} labelStyle={styles.pageButtonText}></Button>
                     </View>
                     <View style={styles.bottomButtons}>
-                        <Button textColor="#2774AE" children="Add to Quicklist" onPress={addToQuicklist} labelStyle={styles.buttonText}></Button>
-                        <Button textColor='#c5050c' style={{paddingLeft: 115}} children="Close" onPress={toggleModal} labelStyle={styles.buttonText}></Button>
+                        { (props.context==="Search" && isInQuicklist) &&
+                            <Button textColor="#c5050c" children="Remove from Quicklist" onPress={removeFromQuicklist} labelStyle={styles.buttonText}></Button>
+                        }
+                        { (props.context==="Search" && !isInQuicklist) &&
+                            <Button textColor="#2774AE" children="Add to Quicklist" onPress={addToQuicklist} labelStyle={styles.buttonText}></Button>
+                        }
+                        { (props.context==="MealInfo") &&
+                            <Button textColor="#c5050c" children="Remove from Meal" onPress={removeFromMeal} labelStyle={styles.buttonText}></Button>
+                        }
+                        { (props.context==="Quicklist") &&
+                            <Button textColor="#c5050c" style={styles.multipurposeButton} children="Remove from Quicklist" onPress={removeFromQuicklist} labelStyle={styles.buttonText}></Button>
+                        }
+                        <Button textColor='#c5050c' style={styles.closeButton} children="Close" onPress={toggleModal} labelStyle={styles.buttonText}></Button>
                     </View>
                 </View>
             </Modal>      
@@ -152,10 +193,10 @@ export default function FoodModal(props: any) {
 const styles = StyleSheet.create({
     modal: {
         alignItems: 'center',
-        height: 600,
-        padding: 15,
-        margin: 15,
-        paddingTop: 20,
+        height: '100%',
+        padding: 10,
+        marginHorizontal: 15,
+        paddingTop: 15,
         backgroundColor: '#f7f7f7',
         borderColor: '#282728',
         borderWidth: 3,
@@ -165,15 +206,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignSelf: 'flex-start',
         position: 'absolute',
-        left: 15,
+        //left: 15,
         bottom: 8
     },
-    buttonText: {
-        fontSize: 16
-    }, 
-    pageButtonText: {
-        fontSize: 16
-    },   
     pageButtons: {
         flexDirection: 'row',
         alignSelf: 'center',
@@ -185,6 +220,62 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderColor: '#dadfe1',
     },
+    closeButton: {
+        //position: 'absolute',
+        left: '220%'
+    },
+    multipurposeButton: {
+        //position: 'absolute',
+        left: '25%'
+    },
+    upperView: {
+        height: '60%',
+        width: '100%',
+        alignItems: 'center'
+    },
+    // modal: {
+    //     alignItems: 'center',
+    //     height: 600,
+    //     padding: 10,
+    //     margin: 15,
+    //     paddingTop: 15,
+    //     backgroundColor: '#f7f7f7',
+    //     borderColor: '#282728',
+    //     borderWidth: 3,
+    //     borderRadius: 15
+    // },
+    // bottomButtons: {
+    //     flexDirection: 'row',
+    //     alignSelf: 'flex-start',
+    //     position: 'absolute',
+    //     //left: 15,
+    //     bottom: 8
+    // },
+    // pageButtons: {
+    //     flexDirection: 'row',
+    //     alignSelf: 'center',
+    //     position: 'absolute',
+    //     paddingLeft: 95,
+    //     bottom: 50,
+    //     width: '100%',
+    //     paddingTop: 10,
+    //     borderTopWidth: 1,
+    //     borderColor: '#dadfe1',
+    // },
+    // closeButton: {
+    //     //position: 'absolute',
+    //     left: '220%'
+    // },
+    // multipurposeButton: {
+    //     //position: 'absolute',
+    //     left: '25%'
+    // },
+    buttonText: {
+        fontSize: 16
+    }, 
+    pageButtonText: {
+        fontSize: 16
+    },   
     header: {
         textTransform: 'capitalize',
         fontSize: 24

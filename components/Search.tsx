@@ -205,7 +205,7 @@ export default function Search({ navigation }: any) {
             </ScrollView>
 
             <Portal.Host>
-                <FoodModal nutrition={nutrition} name={currentName} cost={cost} id={currentId} image={currentImage} toggle={toggleModal} modalVisible={modalVisible}></FoodModal>
+                <FoodModal nutrition={nutrition} name={currentName} cost={cost} id={currentId} image={currentImage} toggle={toggleModal} modalVisible={modalVisible} context={"Search"}></FoodModal>
             </Portal.Host>
 
         </SafeAreaView>

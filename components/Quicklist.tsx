@@ -1,16 +1,49 @@
-import React, { useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Button } from "react-native-paper";
+import { Button, Portal } from "react-native-paper";
 import QuicklistContext from "../context/QuicklistContext";
 import FoodCard from "./FoodCard";
+import FoodModal from "./FoodModal";
 
 export default function Quicklist({ navigation }: any) {
 
     const [quicklist, setQuicklist] = useContext(QuicklistContext)
+    const [viewedFoodId, setViewedFoodId] = useState<number>()
+    const [viewedFoodName, setViewedFoodName] = useState<String>()
+    const [viewedFoodImage, setViewedFoodImage] = useState<String>()
+    const [viewedFoodNutrition, setViewedFoodNutrition] = useState<any>({});
+    const [viewedFoodCost, setViewedFoodCost] = useState<any>({})
+    const [foodModalVisible, setFoodModalVisible] = useState<Boolean>(false);
 
     useEffect(() => {
 
     },[])
+
+    function moreInfo(id: number, name: string, image: string) {
+
+        quicklist.forEach((food: any) => {
+            if (id===food["id"]) {
+                setViewedFoodId(food["id"])
+                setViewedFoodName(food["name"])
+                setViewedFoodImage(food["image"])
+                setViewedFoodCost(food["cost"])
+                setViewedFoodNutrition({
+                    caloricBreakdown: food["caloricBreakdown"],
+                    flavonoids: food["flavonoids"],
+                    nutrients: food["nutrients"],
+                    properties: food["properties"],
+                    weightPerServing: food["weightPerServing"]
+                })
+                setFoodModalVisible(true)
+            }
+        })
+        
+    }
+
+    function toggleFoodModal() {
+        if (!foodModalVisible) setFoodModalVisible(true)
+        else setFoodModalVisible(false)
+    }
 
     return<>
         <SafeAreaView>
@@ -18,7 +51,7 @@ export default function Quicklist({ navigation }: any) {
                 <ScrollView style={styles.scrollview}>
                 {
                     quicklist.map((food: any, i: number) => {
-                        return <FoodCard key={i} id={food["id"]} image={food["image"]} callback={()=>{}} name={food["name"]} mode={0}></FoodCard>
+                        return <FoodCard key={i} id={food["id"]} image={food["image"]} callback={moreInfo} name={food["name"]} mode={0}></FoodCard>
                     })
                 }
                 </ScrollView>
@@ -29,6 +62,12 @@ export default function Quicklist({ navigation }: any) {
                 </View>
             }
             
+            <Portal.Host>
+                    <FoodModal 
+                        nutrition={viewedFoodNutrition} name={viewedFoodName} cost={viewedFoodCost} id={viewedFoodId} image={viewedFoodImage}  
+                        toggle={toggleFoodModal} 
+                        context={"Quicklist"} modalVisible={foodModalVisible} mode={3}></FoodModal>
+            </Portal.Host>
         </SafeAreaView>
     </>
 }

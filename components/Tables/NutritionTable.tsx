@@ -9,7 +9,6 @@ export default function NutritionTable(props: any) {
     const [nutrients, setNutrients] = useState<any>([]);
     const [multiplier, setMultiplier] = useState<number>(1)
     const [headers, setHeaders] = useState<string[]>([]);
-    const [total, setTotal] = useState(0);
 
     useEffect(() => {
 
@@ -40,7 +39,6 @@ export default function NutritionTable(props: any) {
         });
 
         setNutrients(nutrition);
-        setTotal(nutrition.length);
         setHeaders(paramHeaders);
         setMultiplier(props.multiplier)
         
@@ -95,7 +93,9 @@ const styles = StyleSheet.create({
         textTransform: 'capitalize'
     },
     view: {
-        height: 300,
+        //height: 300,
+        height: '100%',
+        width: '100%'
     },
     mealView: {
         height: '100%'

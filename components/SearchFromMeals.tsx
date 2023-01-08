@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 import { useEffect, useState } from "react";
 import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard, Text } from "react-native";
@@ -7,6 +7,7 @@ import { Feather, Entypo } from "@expo/vector-icons";
 
 import FoodCard from "./FoodCard";
 import FoodModal from "./FoodModal";
+import CurrentMealContext from '../context/CurrentMeal';
 
 interface Food {
     [key: string]: any,
@@ -25,7 +26,7 @@ const slogans: string[] = [
 
 const examples: string[] = [
     "Potato",
-    "Broccoli",
+    "Beans",
     "Bread"
 ]
 
@@ -46,6 +47,10 @@ export default function SearchFromMeals(props: any) {
     const [currentId, setCurrentId] = useState("");
     const [currentName, setCurrentName] = useState("");
     const [currentImage, setCurrentImage] = useState("");
+    const [currentIsInMeal, setCurrentIsInMeal] = useState<Boolean>(false);
+
+    // meal related context
+    const [currentMeal, setCurrentMeal] = useContext(CurrentMealContext)
 
     useEffect(() => {
 
@@ -60,6 +65,39 @@ export default function SearchFromMeals(props: any) {
         // set searchbar text placeholder
         setSlogan(slogans[(Math.floor(Math.random()*slogans.length))])
     },[])
+
+    function editMealFoods(multiplier: number) {
+
+        // deep copy current food to prevent pointer issues
+        let foodObject = JSON.parse(JSON.stringify(nutrition))
+        foodObject["cost"] = cost;
+        foodObject["name"] = currentName;
+        foodObject["image"] = currentImage
+        foodObject["id"] = currentId;
+
+        // deep copy to prevent pointer issues
+        let selectedFood = JSON.parse(JSON.stringify(foodObject))
+        selectedFood["multiplier"] = multiplier;
+        selectedFood["quantity"]= selectedFood["weightPerServing"]["amount"]*multiplier
+
+        if (multiplier > 0) {
+            setCurrentMeal({
+                ...currentMeal,
+                foods: [
+                ...currentMeal["foods"],
+                selectedFood
+            ]})
+            setCurrentIsInMeal(true)
+        }
+
+        else if (multiplier === -1) {
+            setCurrentMeal({
+                ...currentMeal,
+                foods: currentMeal["foods"].filter((food:any) => food["name"] !== selectedFood["name"])
+            });
+            setCurrentIsInMeal(false)
+        }
+    }
 
     const beginSearch = () => {
         // don't search if there's nothing to search for, or if we just pressed cancel
@@ -137,20 +175,36 @@ export default function SearchFromMeals(props: any) {
 
             // info is retrieved, show modal. Store ID of food to prevent additional API calls
             setCurrentId(id.toString())
+            isCurrentInMeal(id.toString())
             setCurrentName(name);
             setCurrentImage(image)
             setModalVisible(true);
+            props.toggleButtons()
         }
 
         // we already have the info, just show it
         else {
             setModalVisible(true);
+            props.toggleButtons()
         }
     }
 
+    function isCurrentInMeal(id: String) {
+        currentMeal["foods"].forEach((food: any) => {
+            if (food["id"] === id) setCurrentIsInMeal(true)
+        })
+        setCurrentIsInMeal(false);
+    }
+
     function toggleModal() {
-        if (!modalVisible) setModalVisible(true)
-        else setModalVisible(false)
+        if (!modalVisible) {
+            setModalVisible(true)
+            props.toggleButtons()
+        }
+        else {
+            setModalVisible(false)
+            props.toggleButtons()
+        }
     }
 
     return <>
@@ -205,6 +259,7 @@ export default function SearchFromMeals(props: any) {
                 </View>
             }
             <ScrollView style={styles.scrollView}>
+                {/* if this is an example search, display a banner */}
                 {exampleBanner!=="" && (
                     <View style={styles.exampleBanner}>
                         <Text style={styles.exampleBannerText}>Example Search - {exampleBanner}</Text>
@@ -213,6 +268,7 @@ export default function SearchFromMeals(props: any) {
                 {
                     items.map((item: Food, i) => {
                         if (i === 0 || (i > 0 && items[i-1]["aisle"]!==items[i]["aisle"])) {
+                            // if a new category is beginning, display category name
                             return(
                                 <View key={i} >
                                     <View style={styles.exampleBanner}>
@@ -228,7 +284,7 @@ export default function SearchFromMeals(props: any) {
             </ScrollView>
 
             <Portal.Host>
-                <FoodModal nutrition={nutrition} name={currentName} cost={cost} id={currentId} image={currentImage} toggle={toggleModal} modalVisible={modalVisible} context={"Search"}></FoodModal>
+                <FoodModal nutrition={nutrition} name={currentName} cost={cost} id={currentId} image={currentImage} editMealFoods={editMealFoods} toggle={toggleModal} modalVisible={modalVisible} isInMeal={currentIsInMeal} context={"MealBuilder"}></FoodModal>
             </Portal.Host>
 
         </SafeAreaView>
@@ -238,7 +294,7 @@ export default function SearchFromMeals(props: any) {
 const styles = StyleSheet.create({
     safeView: {
         flex: 1,
-        backgroundColor: '#f7f7f7'
+        backgroundColor: 'white'
     },
     scrollView: {
         backgroundColor: 'white',
@@ -289,7 +345,9 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         width: '80%',
         alignItems: 'center',
-        backgroundColor: "#dadfe1"
+        backgroundColor: "#dadfe1",
+        borderColor: '#646569',
+        borderWidth: 1
     },
     searchbar_unpressed: {
         padding: 10,
@@ -298,5 +356,7 @@ const styles = StyleSheet.create({
         width: '95%',
         backgroundColor: '#dadfe1',
         alignItems: 'center',
+        borderColor: '#646569',
+        borderWidth: 1
     }
 })

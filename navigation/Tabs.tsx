@@ -25,7 +25,7 @@ export default function Tabs() {
                     <Feather name="home" size={20} color="black"></Feather>
                     </>
                 },}}></TabNavigator.Screen>
-            <TabNavigator.Screen name="Search" component={Search}  options={{headerShown: false, tabBarIcon() {
+            <TabNavigator.Screen name="Search" component={Search}  options={{headerShown: true, tabBarIcon() {
                 return<> 
                     <Feather name="search" size={20} color="black"> </Feather>
                 </>

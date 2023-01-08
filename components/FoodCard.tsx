@@ -40,6 +40,11 @@ export default function FoodCard(props: Food) {
             }
         }
 
+        // from 'Meals' tab
+        else if (props.mode===2) {
+           props.callback(props.id, props.name, props.image)
+        }
+
         // if nutritional value is being viewed
         else {
             props.callback(props.id, props.name, props.image);

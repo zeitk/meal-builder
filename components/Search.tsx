@@ -30,7 +30,7 @@ const examples: string[] = [
     "Bread"
 ]
 
-export default function Search({ navigation, route }: any, props: any) {
+export default function Search({ navigation }: any) {
 
     // search related states
     const [items, setItems] = useState([]);

@@ -25,7 +25,7 @@ export default function FoodModal(props: any) {
         isFoodInQuicklist(props.id);
         setPage(1);
         (props.context==="MealInfo") ? setMultiplier(props.servings["multiplier"]):setMultiplier(1);
-    }, [props.name])
+    }, [props])
 
     // callback to hide modal
     function toggleModal() {
@@ -92,6 +92,12 @@ export default function FoodModal(props: any) {
 
     function removeFromMeal() {
         props.editMealFoods(-1)
+        Alert.alert("Removed", capitalize(props.name)+" has been removed from the current meal")
+    }
+
+    function addToMeal() {
+        props.editMealFoods(multiplier);
+        Alert.alert("Added", capitalize(props.name)+" has been added to the current meal")
     }
 
     function capitalize(input: string) {
@@ -192,7 +198,13 @@ export default function FoodModal(props: any) {
                         }
                         { (props.context==="Quicklist") &&
                             <Button textColor="#c5050c" children="Remove from Quicklist" onPress={removeFromQuicklist} labelStyle={styles.buttonText}></Button>
-                        }                            
+                        } 
+                        { (props.context==="MealBuilder" && !props.isInMeal) &&
+                            <Button textColor="#2774AE" children="Add to Meal" onPress={addToMeal} labelStyle={styles.buttonText}></Button>
+                        } 
+                        { (props.context==="MealBuilder" && props.isInMeal) &&
+                            <Button textColor="#c5050c" children="Remove from Meal" onPress={removeFromMeal} labelStyle={styles.buttonText}></Button>
+                        }                             
                         </View>
                         <View style={styles.closeButton}>
                             <Button textColor='#c5050c'  children="Close" onPress={toggleModal} labelStyle={styles.buttonText}></Button>
@@ -209,8 +221,8 @@ const styles = StyleSheet.create({
     // view styles
     modal: {
         margin: '4%',
-        marginTop: '30%',
-        height: '80%',
+        //marginTop: '30%',
+        height: 625,
     },
     containerView: {
         alignItems: 'center',

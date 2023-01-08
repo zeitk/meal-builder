@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
         fontWeight: '300'
     },
     nutritionView: {
-        height: '83%',
+        height: '81%',
         padding: 7.5
     },
     textInputView: {
@@ -499,13 +499,13 @@ const styles = StyleSheet.create({
         borderColor: '#dadfe1'
     },
     costView: {
-        height: '17.5%',
+        height: '25%',
         alignItems: 'center',
         borderTopWidth: 1,
         borderColor: '#dadfe1',
     },
     flavonoidsView: {
-        height: '67%',
+        height: '64%',
         alignItems: 'center'
     },
     foodsLabelView: {

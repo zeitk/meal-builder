@@ -18,10 +18,12 @@ export default function MealModal({ navigation, route }: any,props: any) {
     const [currentMeal, setCurrentMeal] = useState<any>({});
     const [mealList, setMealList] = useContext(MealListContext);
     const [page, setPage] = useState<number>(1);
+    const [hideButtons, setHideButtons] = useState<boolean>(false);
     
     useEffect(() =>{
 
         setPage(1);
+        setHideButtons(false);
 
         // if list is empty set Id to 1
         // else set id to the last id in array plus 1, in the case of deletion
@@ -252,7 +254,13 @@ export default function MealModal({ navigation, route }: any,props: any) {
         }
     }
 
+    function toggleButtons() {
+        if (hideButtons) setHideButtons(false);
+        else setHideButtons(true)
+    }
+
     return (
+        <CurrentMealContext.Provider  value={[currentMeal, setCurrentMeal]}>
         <View style={styles.modal}>
             {/* show a different view depending on whether Quicklist is populated */}
             { (quicklist.length>0) 
@@ -285,7 +293,7 @@ export default function MealModal({ navigation, route }: any,props: any) {
                     </View>
                     :
                     <View style={styles.inputScrollView}>
-                        <View style={styles.textInputView}>
+                        {/* <View style={styles.textInputView}>
                                 <TextInput 
                                         selectionColor="#f7f7f7" 
                                         placeholderTextColor="#adadad" 
@@ -294,24 +302,26 @@ export default function MealModal({ navigation, route }: any,props: any) {
                                         placeholder={"New Meal"}
                                         onSubmitEditing={(value) => newMealName(value.nativeEvent.text) }>
                                 </TextInput>
-                        </View>
-                        <View style={{height: '90%'}}>
-                            <SearchFromMeals></SearchFromMeals>
+                        </View> */}
+                        <View style={{height: '100%'}}>
+                            <SearchFromMeals toggleButtons={toggleButtons}></SearchFromMeals>
                         </View>
                     </View>
                     }
-
+                    
                     <View style={styles.bottomButtonsView}>
                         <View style={styles.changeSearchButtonView}>
-                            <Button children={(page===1) ? "Search all foods":"Quicklist"} textColor="#2774AE" labelStyle={styles.buttonText} style={styles.singleButton} onPress={changePage}></Button>
+                            <Button disabled={hideButtons} children={(page===1) ? "Search all foods":"Quicklist"} textColor="#2774AE" labelStyle={styles.buttonText} style={styles.singleButton} onPress={changePage}></Button>
                         </View>
                         <View style={styles.closeButtonsView}>
                             <View style={styles.closeSaveButtons}>
-                                <Button children="Close" textColor="#c5050c" labelStyle={styles.buttonText} style={styles.twinButtons} onPress={()=> closeModal(1)}></Button>
-                                <Button children="Save" textColor="#22a811" labelStyle={styles.buttonText} style={styles.twinButtons} onPress={()=> closeModal(2)}></Button>
+                                <Button disabled={hideButtons} children="Close" textColor="#c5050c" labelStyle={styles.buttonText} style={styles.twinButtons} onPress={()=> closeModal(1)}></Button>
+                                <Button disabled={hideButtons} children="Save" textColor="#22a811" labelStyle={styles.buttonText} style={styles.twinButtons} onPress={()=> closeModal(2)}></Button>
                             </View>
                         </View>
                     </View>
+                    
+
 
                 </View>
 
@@ -336,6 +346,7 @@ export default function MealModal({ navigation, route }: any,props: any) {
             }
 
         </View>     
+        </CurrentMealContext.Provider>
     )
 }
 

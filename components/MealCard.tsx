@@ -37,14 +37,9 @@ export default function MealCard(props: any, { navigation }: any ) {
         // give prompt before deleting meal
         Alert.alert(
             'Delete Meal',
-            'Are you sure you want to delete this meal?',
-            [
-              {
-                text: 'Cancel',
-                onPress: () => {},
-                style: 'cancel',
-              },
-              { text: 'Yes', onPress: () => deleteMeal() },
+            'Are you sure you want to delete this meal?',[
+                { text: 'Cancel', onPress: () => {}, style: 'cancel'},
+                { text: 'Yes', onPress: () => deleteMeal() },
             ],
             { cancelable: false }
           );
@@ -75,7 +70,7 @@ export default function MealCard(props: any, { navigation }: any ) {
                         </View>
 
                         <View style={styles.titleView}>
-                            <Text style={styles.title}>{props.name}</Text>
+                            <Text numberOfLines={2} style={styles.title}>{props.name}</Text>
                         </View>
 
                         <View style={styles.deleteButtonView}>
@@ -121,6 +116,7 @@ const styles = StyleSheet.create({
     titleView: {
         width: '57%',
         justifyContent: 'center',
+        overflow: 'hidden'
     },
     title: {
         textTransform: 'capitalize',
@@ -128,13 +124,13 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         fontSize: 21,
         paddingLeft: 20,
-        lineHeight: 100
     },
     deleteButtonView: {
         width: '10%',
+        alignItems: 'center'
     },
     deleteButton: {
-        lineHeight: 100
+        lineHeight: 100,
     },
     content: {
         flexDirection: 'row',

@@ -16,16 +16,16 @@ export default function MealInfo({ navigation, route }: any, props: any) {
     // states
     const [page, setPage] = useState<number>(1);
     const [multiplier, setMultiplier] = useState<number>(1);
-    const [isNameEditing, setIsNameEditing] = useState<Boolean>(false)
+    const [isNameEditing, setIsNameEditing] = useState<boolean>(false)
     const [mealList, setMealList] = useContext(MealListContext);
-    const [newName, setNewName] = useState<String>("")
+    const [name, setName] = useState<string>("")
 
     // modal related states
     const [viewedFoodId, setViewedFoodId] = useState<number>()
-    const [viewedFoodName, setViewedFoodName] = useState<String>()
-    const [viewedFoodImage, setViewedFoodImage] = useState<String>()
+    const [viewedFoodName, setViewedFoodName] = useState<string>()
+    const [viewedFoodImage, setViewedFoodImage] = useState<string>()
     const [viewedFoodNutrition, setViewedFoodNutrition] = useState<any>({});
-    const [foodModalVisible, setFoodModalVisible] = useState<Boolean>(false);
+    const [foodModalVisible, setFoodModalVisible] = useState<boolean>(false);
     const [viewedFoodServings, setViewedFoodServings] = useState<any>({})
 
     // non-state constants
@@ -39,7 +39,6 @@ export default function MealInfo({ navigation, route }: any, props: any) {
     const nutrients = mealList[mealIndex]["data"]["nutrients"]
     const cost = mealList[mealIndex]["data"]["cost"]
     const flavonoids = mealList[mealIndex]["data"]["flavonoids"]
-    const name = mealList[mealIndex]["name"]
     const foods = mealList[mealIndex]["foods"]
     const ref = useRef<any>(null)
 
@@ -48,7 +47,7 @@ export default function MealInfo({ navigation, route }: any, props: any) {
         setPage(1)
         setMultiplier(1);
         setIsNameEditing(false)
-        setNewName("")
+        setName(mealList[mealIndex]["name"])
         setFoodModalVisible(false)
     }, [])
 
@@ -71,7 +70,7 @@ export default function MealInfo({ navigation, route }: any, props: any) {
     }
 
     // set new serving size
-    function newServingQuantity(multiplier: String) {
+    function newServingQuantity(multiplier: string) {
             setMultiplier(Number(multiplier))
     }
 
@@ -84,8 +83,14 @@ export default function MealInfo({ navigation, route }: any, props: any) {
         }
     }
 
-    function setName(newName: String) {
-        setNewName(newName)
+    function newMealName(newName: string) {
+
+        if (newName==="") {
+            setIsNameEditing(false)
+            return
+        }
+
+        setName(newName)
         setIsNameEditing(false)
 
         // transform only the meal of interest in mealList
@@ -313,32 +318,35 @@ export default function MealInfo({ navigation, route }: any, props: any) {
     return (
         <View >
             
-            <View style={styles.topView}>
+            <View style={viewStyles.top}>
                 { (isNameEditing) ?
-                    <View style={styles.headerView}>
+                    <View style={viewStyles.header}>
                         <TextInput
                             ref={ref}
-                            style={styles.mealNameTextInput}
-                            placeholder={(newName==="") ? name:newName}
+                            style={textStyles.mealNameTextInput}
+                            placeholder={name}
                             placeholderTextColor="#adadad"
                             returnKeyType="done" 
-                            onSubmitEditing={(value) => setName(value.nativeEvent.text) } 
+                            maxLength={20}
+                            onEndEditing={(value) => newMealName(value.nativeEvent.text) }
+                            onSubmitEditing={(value) => newMealName(value.nativeEvent.text) } 
                         ></TextInput>
-                        <Button children="Cancel" textColor="#c5050c" onPress={editName} labelStyle={styles.nameEditButtonText} style={styles.nameEditButton}></Button>
+                        <Button children="Cancel" textColor="#c5050c" onPress={editName} labelStyle={textStyles.editButton} style={buttonStyles.nameEditButton}></Button>
                     </View>
                     :
-                    <View style={styles.headerView}>
-                        <Text style={styles.mealName}>{(newName==="") ? name:newName}</Text>
-                        <Button children="Edit Name" textColor="black" onPress={editName} labelStyle={styles.nameEditButtonText} style={styles.nameEditButton}></Button>
+                    <View style={viewStyles.header}>
+                        <Text numberOfLines={1} style={textStyles.mealName}>{name}</Text>
+                        <Button children="Edit Name" textColor="#282728" onPress={editName} labelStyle={textStyles.editButton} style={buttonStyles.nameEditButton}></Button>
                     </View>
                 }
             </View>
             { (page === 1) &&
-                <View style={styles.upperView}>
-                    <View style={styles.foodsLabelView}>
-                        <Text style={styles.foodsLabel}>Items : </Text>
+                <View style={viewStyles.middle}>
+                    <View style={viewStyles.foodsLabel}>
+                        <Text style={textStyles.foodsLabel}>Items : </Text>
+                        <Button children="Add Items" textColor="#282728" labelStyle={textStyles.editButton} style={buttonStyles.addFood} onPress={()=>{ navigation.navigate('MealBuilder', { meal: mealList[mealIndex]} )} }></Button>
                     </View>
-                    <ScrollView style={styles.foodsScrollView}>
+                    <ScrollView style={viewStyles.scroll}>
                     {
                         foods.map((food: any, i: number) => {
                             return <FoodCard key={i} id={food["id"]} image={food["image"]} callback={moreFoodInfo} name={food["name"]} quantity={food["quantity"]} mode={2}></FoodCard>
@@ -351,10 +359,10 @@ export default function MealInfo({ navigation, route }: any, props: any) {
             {
                 (page === 2) &&
                 (
-                    <View style={styles.upperView}>
-                        <View style={styles.textInputView}>
+                    <View style={viewStyles.middle}>
+                        <View style={viewStyles.textInput}>
                             <Text style={{fontSize: 12, color: '#757577', fontWeight: '500', paddingRight: 10}}>Number of servings: </Text>
-                            <TextInput  style={styles.textInput}
+                            <TextInput  style={textStyles.servingTextInput}
                                         selectionColor="#f7f7f7"  
                                         keyboardType={"numeric"} 
                                         returnKeyType="done" 
@@ -362,7 +370,7 @@ export default function MealInfo({ navigation, route }: any, props: any) {
                                         placeholder={multiplier.toString()}
                                         placeholderTextColor="#adadad"></TextInput>
                         </View>
-                        <View style={styles.nutritionView}>
+                        <View style={viewStyles.nutrition}>
                             <NutritionTable nutrition={nutrients} isMealView={true} multiplier={multiplier}></NutritionTable>
                         </View>
                     </View>
@@ -371,114 +379,61 @@ export default function MealInfo({ navigation, route }: any, props: any) {
             {
                 (page == 3) &&
                 (
-                    <View style={styles.upperView}>
-                        <View style={styles.costView}>
+                    <View style={viewStyles.middle}>
+                        <View style={viewStyles.cost}>
                             <CostTable cost={cost} multiplier={multiplier}></CostTable>
                         </View>
-                        <View style={styles.flavonoidsView}>
+                        <View style={viewStyles.flavonoids}>
                             <FlavonoidsTable flavonoidsProps={flavonoids} multiplier={multiplier} isMealView={true}></FlavonoidsTable>
                         </View>
                     </View>
                 )
             }
 
-            <View style={styles.lowerView}>           
-                <Button children={(page===3) ? "Overview":"Foods"} textColor="#2774AE" labelStyle={styles.buttonText} style={styles.leftButton} onPress={()=> prevPage()} disabled={(page<2)}></Button>
-                <Text style={styles.pageText}>{page}</Text>
-                <Button children={(page===1) ? "Overview":"More info"} textColor="#2774AE" labelStyle={styles.buttonText} style={styles.rightButton} onPress={()=> nextPage()} disabled={(page>2)}></Button>          
-                <Button children={"Close"} textColor="#c5050c" labelStyle={styles.buttonText} style={styles.closeButton} onPress={()=> closeModal(1)}></Button>
+            <View style={viewStyles.lower}>      
+                <Button children={(page===3) ? "Overview":"Foods"} textColor="#2774AE" labelStyle={textStyles.button} style={buttonStyles.leftButton} onPress={()=> prevPage()} disabled={(page<2)}></Button>
+                <Text style={textStyles.pageText}>{page}</Text>
+                <Button children={(page===1) ? "Overview":"More info"} textColor="#2774AE" labelStyle={textStyles.button} style={buttonStyles.rightButton} onPress={()=> nextPage()} disabled={(page>2)}></Button>          
+                <Button children={"Close"} textColor="#c5050c" labelStyle={textStyles.button} style={buttonStyles.closeButton} onPress={()=> closeModal(1)}></Button>
             </View>
 
             <Portal.Host>
                 <FoodModal 
-                        nutrition={viewedFoodNutrition} name={viewedFoodName} cost={cost} id={viewedFoodId} image={viewedFoodImage} servings={viewedFoodServings} 
-                        toggle={toggleFoodModal} editMealFoods={editMealFoods} 
-                        context={"MealInfo"} modalVisible={foodModalVisible}></FoodModal>
+                    nutrition={viewedFoodNutrition} name={viewedFoodName} cost={cost} id={viewedFoodId} image={viewedFoodImage} servings={viewedFoodServings} 
+                    toggle={toggleFoodModal} editMealFoods={editMealFoods} context={"MealInfo"} modalVisible={foodModalVisible}
+                ></FoodModal>
             </Portal.Host>
 
         </View>
     )
 }
 
-const styles = StyleSheet.create({
-    topView: {
-        height: '10%',
-        justifyContent: 'center',
-    },
-    headerView: {
+const viewStyles = StyleSheet.create({
+
+    // views
+    header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-   },
-   mealName: {
-        fontSize: 24,
-        fontWeight: '300',
-        position: 'absolute',
-        left: '37.5%',
-        width: '35%',
-        padding: 7.5,
-        paddingLeft: 15,
     },
-    mealNameTextInput: {
-        fontSize: 24,
-        fontWeight: '300',
-        position: 'absolute',
-        left: '37.5%',
-        width: '35%',
-        padding: 7.5,
-        paddingLeft: 15,
-        borderWidth: 1,
-        borderColor: '#646569'
+    top: {
+        height: '10%',
+        justifyContent: 'center',
     },
-    nameEditButton: {
-        position: 'absolute',
-        left: '74%',
-        alignSelf: 'center'
-    },
-    nameEditButtonText: {
-        fontSize: 12
-    },
-    upperView: {
+    middle: {
         height: '75%',
     },
-   lowerView: {
-        height: '13%',
+    lower: {
+        height: '12%',
         flexDirection: 'row',
         alignItems: 'center',
         borderTopWidth: 1,
         borderColor: '#dadfe1'
     },
-    closeSaveButtons: {
-        flexDirection: 'row',
+    scroll: {
+        height: '85%'
     },
-    buttons: {
-
-    },
-    leftButton: {
-        position: 'absolute',
-        left: '5%'
-    },
-    pageText: {
-        position: 'absolute',
-        left: '35%'
-    },
-    rightButton: {
-        position: 'absolute',
-        left: '42.5%'
-    },
-    closeButton: {
-        position: 'absolute',
-        left: '72.5%'
-    },
-    buttonText: {
-        fontSize: 20,
-        fontWeight: '300'
-    },
-    nutritionView: {
-        height: '81%',
-        padding: 7.5
-    },
-    textInputView: {
+    textInput: {
         height: '10%',
         flexDirection: 'row',
         alignItems: 'center',
@@ -490,37 +445,95 @@ const styles = StyleSheet.create({
         borderColor: '#dadfe1',
         width: '95%'
     },
-    textInput: {
-        width: '12.5%',
-        height: '75%',
+    foodsLabel: {
+        height: 65,
         padding: 5,
-        paddingVertical: 10,
-        borderWidth: 1,
-        borderColor: '#dadfe1'
+        marginBottom: 5,
+        borderTopWidth: 1,
+        borderColor: '#dadfe1',
+        flexDirection: 'row',
+        alignItems: 'center'
     },
-    costView: {
+    nutrition: {
+        height: '83.5%',
+        padding: 7.5
+    },
+    cost: {
         height: '25%',
         alignItems: 'center',
         borderTopWidth: 1,
         borderColor: '#dadfe1',
     },
-    flavonoidsView: {
-        height: '64%',
+    flavonoids: {
+        height: '68%',
         alignItems: 'center'
     },
-    foodsLabelView: {
-        height: '5%',
-        padding: 5,
-        marginBottom: 5,
-        borderTopWidth: 1,
-        borderColor: '#dadfe1'
+})
+
+const textStyles = StyleSheet.create({
+    button: {
+        fontSize: 20,
+        fontWeight: '300'
     },
     foodsLabel: {
         fontSize: 20,
         fontWeight: '300',
         paddingLeft: 20
     },
-    foodsScrollView: {
-        height: '85%'
+    mealName: {
+        fontSize: 24,
+        fontWeight: '300',
+        width: 150,
+        padding: 7.5,
+    },
+    mealNameTextInput: {
+        fontSize: 24,
+        fontWeight: '300',
+        width: 150,
+        padding: 7.5,
+        borderWidth: 1,
+        borderColor: '#646569'
+    },
+    editButton: {
+        fontSize: 12
+    },
+    pageText: {
+        position: 'absolute',
+        left: '35%'
+    },
+    servingTextInput: {
+        width: '12.5%',
+        height: '75%',
+        padding: 5,
+        paddingVertical: 10,
+        borderWidth: 1,
+        borderColor: '#dadfe1'
+    }
+})
+
+const buttonStyles = StyleSheet.create({
+    closeSaveButtons: {
+        flexDirection: 'row',
+    },
+    leftButton: {
+        position: 'absolute',
+        left: '5%'
+    },
+    rightButton: {
+        position: 'absolute',
+        left: '42.5%'
+    },
+    closeButton: {
+        position: 'absolute',
+        left: '72.5%'
+    },
+    nameEditButton: {
+        position: 'absolute',
+        right: '5%',
+        alignSelf: 'center'
+    },
+    addFood: {
+        position: 'absolute',
+        right: '5%'
     }
 })

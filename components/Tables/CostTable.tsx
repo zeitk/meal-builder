@@ -32,8 +32,6 @@ export default function CostTable(props: any) {
                 </DataTable.Header>
 
                 <DataTable.Row>
-                    {/* <DataTable.Cell textStyle={styles.text}>{(cost*multiplier).toFixed(2)}</DataTable.Cell>
-                    <DataTable.Cell textStyle={styles.text}>{units}</DataTable.Cell> */}
                     <DataTable.Cell textStyle={styles.text}>{((cost*multiplier>100 && units==="US Cents")) ? (cost*multiplier/100).toFixed(2):(cost*multiplier).toFixed(2)}</DataTable.Cell>
                     <DataTable.Cell textStyle={styles.text}>{((cost*multiplier>100 && units==="US Cents")) ? "US Dollars":units}</DataTable.Cell>
                 </DataTable.Row>

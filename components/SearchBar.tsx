@@ -1,8 +1,8 @@
 import React from 'react'
 
 import { useEffect, useState } from "react";
-import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard, Text } from "react-native";
-import { Button, Portal } from "react-native-paper";
+import {  View, TextInput, StyleSheet, Keyboard } from "react-native";
+import { Button } from "react-native-paper";
 import { Feather, Entypo } from "@expo/vector-icons";
 
 const slogans: string[] = [

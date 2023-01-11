@@ -1,26 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
-import { Button, Portal } from 'react-native-paper';
-import CurrentMealContext from '../context/CurrentMeal';
+import { Button } from 'react-native-paper';
 import MealListContext from '../context/MealList';
 import MealCard from './MealCard';
-import MealModal from './MealModal';
 
 
 export default function Meals({ navigation, route }: any) {
-  
-    const [modalVisible, setModalVisible] = useState(false);
-    const [mealList, setMealList] = useContext(MealListContext)
+
+    const [mealList] = useContext(MealListContext)
 
     useEffect(() => {
         
     },[])
-
-    function toggleModal() {
-        if (!modalVisible) setModalVisible(true)
-        else setModalVisible(false)
-    }
 
     return<>
         <SafeAreaView style={styles.safeView}>
@@ -38,7 +30,7 @@ export default function Meals({ navigation, route }: any) {
                 </View>
             }
             <View style={styles.buttonView}>
-                    <Button mode="text" children="Add Meal" textColor="#2774AE" labelStyle={styles.buttonText} style={styles.button} onPress={()=>{ navigation.navigate('MealModal')}}></Button>
+                    <Button mode="text" children="Add Meal" textColor="#2774AE" labelStyle={styles.buttonText} style={styles.button} onPress={()=>{ navigation.navigate('MealBuilder')}}></Button>
             </View>
         </SafeAreaView>
     </>

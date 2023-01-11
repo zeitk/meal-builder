@@ -25,7 +25,7 @@ export default function FoodModal(props: any) {
         isFoodInQuicklist(props.id);
         setPage(1);
         (props.context==="MealInfo") ? setMultiplier(props.servings["multiplier"]):setMultiplier(1);
-    }, [props])
+    }, [props.id])
 
     // callback to hide modal
     function toggleModal() {
@@ -220,8 +220,7 @@ const styles = StyleSheet.create({
 
     // view styles
     modal: {
-        margin: '4%',
-        //marginTop: '30%',
+        margin: '3%',
         height: 625,
     },
     containerView: {
@@ -231,7 +230,7 @@ const styles = StyleSheet.create({
         paddingTop: 15,
         backgroundColor: '#f7f7f7',
         borderColor: '#282728',
-        borderWidth: 3,
+        borderWidth: 2,
         borderRadius: 15
     },
     upperView: {

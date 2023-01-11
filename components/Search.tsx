@@ -117,8 +117,11 @@ export default function Search({ navigation }: any) {
 
     function moreInfo(id: number, name: string, image: string) {
 
+
         // don't fetch if we already have the info
         if (id.toString()!==currentId) {
+
+            setNutrition([]);
 
             const params = {
                 amount: '150',

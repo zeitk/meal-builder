@@ -99,6 +99,7 @@ export default function SearchFromMeals(props: any) {
         }
     }
 
+    // helper function searching foods
     const beginSearch = () => {
         // don't search if there's nothing to search for, or if we just pressed cancel
         if (searchString==="") return
@@ -108,6 +109,7 @@ export default function SearchFromMeals(props: any) {
         searchItems(searchString)
     }
 
+    // search for foods and update state
     const searchItems = ((input: any) => {
 
         // change our placeholder
@@ -190,10 +192,14 @@ export default function SearchFromMeals(props: any) {
     }
 
     function isCurrentInMeal(id: String) {
+        let found: boolean = false;
         currentMeal["foods"].forEach((food: any) => {
-            if (food["id"] === id) setCurrentIsInMeal(true)
+            if (food["id"] === id)  {
+                setCurrentIsInMeal(true)
+                found = true;
+            }
         })
-        setCurrentIsInMeal(false);
+        if (!found) setCurrentIsInMeal(false);
     }
 
     function toggleModal() {
@@ -294,7 +300,7 @@ export default function SearchFromMeals(props: any) {
 const styles = StyleSheet.create({
     safeView: {
         flex: 1,
-        backgroundColor: 'white'
+        backgroundColor: '#f7f7f7'
     },
     scrollView: {
         backgroundColor: 'white',

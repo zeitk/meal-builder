@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 import { StyleSheet, Text, View, Image, Pressable, TextInput } from "react-native";
 import { Card } from "react-native-paper";
+import { Entypo } from '@expo/vector-icons'; 
 
 interface Food {
     [key: string]: any,
@@ -56,22 +57,28 @@ export default function FoodCard(props: Food) {
             <Pressable onPress={showMoreInfo}>
 
                 <Card style={(isPressed) ? styles.card_pressed:styles.card_unpressed}>
-                    <Card.Content style={styles.content}>
+                    <Card.Content style={styles.overallView}>
                         <View style={styles.imageView}>
                             <Image source={{ uri: imageUrl + imageSize + "/" + props.image }} style={styles.image}></Image>
                         </View>
-                        <View style={(isPressed || props.mode===2) ? styles.pressedTitleView:styles.unpressedTitleView}>
-                            <Text style={styles.title}>{props.name}</Text>
-                        </View>
-                        { (isPressed || props.mode===2) && 
-                            <View style={styles.quantityView}>
-                                <Text style={styles.quantityText}>Quantity: </Text>
-                                { (props.mode===2) &&
-                                    <Text>
-                                        {(Number(props.quantity)).toFixed(0)}g
-                                    </Text>
-                                }
-                                { (props.mode===1) &&
+                        {/* Show different displays depending on our activity */}
+                        {/* Viewing from Search or Quicklist */}
+                        { (props.mode===0) &&
+                            <View style={styles.unpressedTitleView}>
+                                <Text style={styles.titleText}>{props.name}</Text>
+                            </View>
+                        }
+                        {/* Viewing from Meal Builder */}
+                        { (props.mode===1) &&
+                            <View style={styles.infoTextView}>
+                                <View style={(isPressed) ? styles.pressedTitleView:styles.unpressedTitleView}>
+                                    <Text numberOfLines={2} style={styles.titleText}>{props.name}</Text>
+                                </View>
+                                { (isPressed) 
+                                ? 
+                                <View style={styles.quantityView}>
+                                    <Text style={styles.quantityText}>Quantity(g): </Text>
+
                                     <TextInput  
                                         style={styles.quantityTextInput}
                                         selectionColor="#f7f7f7"  
@@ -81,8 +88,23 @@ export default function FoodCard(props: Food) {
                                         onSubmitEditing={(value) => showMoreInfo(value.nativeEvent.text) } 
                                         placeholder={"150g"}>
                                     </TextInput>
+                                    
+                                </View>
+                                :
+                                undefined
                                 }
-
+                            </View>
+                        }
+                        {/* Viewing from Meal Info */}
+                        { (props.mode===2) &&
+                            <View style={mealStyles.mealInfoOverall}>
+                                <View style={mealStyles.mealInfoTextView}>
+                                    <Text numberOfLines={2} style={mealStyles.mealInfoTitleText}>{props.name}</Text>
+                                    <Text numberOfLines={1} style={mealStyles.quantityText}>Quantity: {(Number(props.quantity)).toFixed(0)}g</Text>
+                                </View>
+                                <View style={mealStyles.mealInfoIcon}>
+                                    <Entypo name="edit" size={22} color="black" />
+                                </View>
                             </View>
                         }
                     </Card.Content>
@@ -130,19 +152,23 @@ const styles = StyleSheet.create({
         width: '72.5%'
     },
     pressedTitleView: {
-        width: '37.5%'
+        width: '65%'
     },
-    title: {
+    titleText: {
         textTransform: 'capitalize',
         fontWeight: '300',
         textAlign: 'left',
         fontSize: 21,
-        padding: 20
+        padding: 20,
     },
-    content: {
+    overallView: {
         flexDirection: 'row',
         alignSelf: 'flex-start',
         alignItems: 'center'
+    },
+    infoTextView: {
+        width: '72,5%',
+        flexDirection: 'row'
     },
     quantityView: {
         width: '35%',
@@ -160,5 +186,33 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderWidth: 1,
         borderColor: '#dadfe1'
+    }
+})
+
+const mealStyles = StyleSheet.create({
+    mealInfoTextView: {
+        width: '85%',
+        paddingLeft: 12.5,
+        alignItems: 'flex-start',
+    },
+    mealInfoTitleText: {
+        textTransform: 'capitalize',
+        fontWeight: '300',
+        textAlign: 'left',
+        fontSize: 21,
+        paddingBottom: 10
+    },
+    mealInfoIcon: {
+        width: '15%',
+        justifyContent: 'center'
+    },
+    mealInfoOverall: {
+        flexDirection: 'row',
+        width: '72.5%'
+    },
+    quantityText: {
+        paddingBottom: 5,
+        fontSize: 16,
+        fontWeight: '300'
     }
 })

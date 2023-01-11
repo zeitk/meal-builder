@@ -47,6 +47,13 @@ export default function ServingSizeTable(props: any) {
                         placeholderTextColor="#adadad"  
                         keyboardType={"numeric"} 
                         returnKeyType="done" 
+                        onEndEditing={(value) => {
+                            (value.nativeEvent.text==="") 
+                            ? 
+                            newServingSize((baseServingSize*props.multiplier).toString())
+                            :
+                            newServingSize(value.nativeEvent.text)
+                        }}
                         onSubmitEditing={(value) => newServingSize(value.nativeEvent.text) } 
                         placeholder={(baseServingSize*props.multiplier).toString()}></TextInput>
             <Text style={{paddingLeft: 3}}> {(unit==='g') ? "grams":unit}</Text>

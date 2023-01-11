@@ -39,7 +39,7 @@ export default function FlavonoidsTable(props: any) {
         <View style={styles.bodyView}>
             <DataTable>
 
-                <View style={styles.columnHeadersView}>
+                <View style={(props.isMealView) ? styles.mealColumnHeadersView:styles.columnHeadersView}>
                     <DataTable.Header>
                         {
                             headers.map((header: string, i) => {
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     headerView: {
         height: '5%',
         width: '100%',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     bodyView: {
         height: '95%',
@@ -100,6 +100,10 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 12
+    },
+    mealColumnHeadersView: {
+        height: '11%',
+        alignItems: 'center'
     },
     mealView: {
         height: '100%'

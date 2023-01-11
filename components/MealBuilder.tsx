@@ -8,10 +8,9 @@ import MealListContext from '../context/MealList';
 import QuicklistContext from '../context/QuicklistContext';
 import FoodCard from './FoodCard';
 import { Meal } from '../interfaces/Interfaces'
-import Search from './Search';
 import SearchFromMeals from './SearchFromMeals';
 
-export default function MealModal({ navigation, route }: any,props: any) {
+export default function MealBuilder({ navigation, route }: any,props: any) {
 
     // states
     const [quicklist, setQuicklist] = useContext(QuicklistContext);
@@ -19,12 +18,18 @@ export default function MealModal({ navigation, route }: any,props: any) {
     const [mealList, setMealList] = useContext(MealListContext);
     const [page, setPage] = useState<number>(1);
     const [hideButtons, setHideButtons] = useState<boolean>(false);
+    const [inEditMode, setInEditMode] = useState<boolean>(false);
     
     useEffect(() =>{
 
         setPage(1);
         setHideButtons(false);
 
+        if (route.params === undefined) newMeal();
+        else existingMeal(route.params);
+    },[])
+
+    function newMeal() {
         // if list is empty set Id to 1
         // else set id to the last id in array plus 1, in the case of deletion
         let mealId;
@@ -39,7 +44,21 @@ export default function MealModal({ navigation, route }: any,props: any) {
             foods: [],
             data: {}
         })
-    },[])
+    }
+
+    function existingMeal(params: any) {
+
+        if (params.meal===undefined) navigation.goBack();
+        const meal = params.meal
+        setCurrentMeal({
+            id: meal["id"],
+            name: meal["name"],
+            foods: meal["foods"],
+            data: meal["data"]
+        })
+        setInEditMode(true);
+        setPage(2);
+    }
 
     function changePage() {
         (page===1) ? setPage(2):setPage(1)
@@ -86,8 +105,6 @@ export default function MealModal({ navigation, route }: any,props: any) {
                 }
             })
         }
-
-
     }
 
     function saveMealData() {
@@ -220,8 +237,24 @@ export default function MealModal({ navigation, route }: any,props: any) {
 
     function closeModal(mode: number) {
 
+        if (mode===1) {
+
+            if (currentMeal["foods"].length > 0) {
+                Alert.alert(
+                    'Unsaved changes',
+                    'Are you sure you want to leave?',[
+                        { text: 'Cancel', onPress: () => {}, style: 'cancel'},
+                        { text: 'Yes', onPress: () => { navigation.goBack() } },
+                    ],
+                    { cancelable: false }
+                  );
+            }
+
+            else navigation.goBack()
+        }
+
         // save meal if user pressed 'Save'
-        if (mode===2) {
+        else if (mode===2) {
 
             if (currentMeal["foods"].length === 0) {
                 Alert.alert("Error", "Meals must contain 1 or more foods")
@@ -234,10 +267,29 @@ export default function MealModal({ navigation, route }: any,props: any) {
                 ...mealList,
                 newMeal
             ])
+            
+            //close modal
+            navigation.goBack()
         }  
 
+        // if we're updating an existing meal
+        else if (mode===3) {
+            const updatedMeal = saveMealData();
+
+            const updatedMealList = mealList.map((meal: any) => {
+                if (meal["id"] === updatedMeal["id"]) {
+                    return updatedMeal
+                }
+                else return meal
+            })
+            setMealList(updatedMealList)
+
+            //close modal
+            navigation.goBack()
+        }
+
         //close modal
-        navigation.goBack()
+        //navigation.goBack()
     }
     
     function newMealName(newName: any) {
@@ -261,113 +313,173 @@ export default function MealModal({ navigation, route }: any,props: any) {
 
     return (
         <CurrentMealContext.Provider  value={[currentMeal, setCurrentMeal]}>
-        <View style={styles.modal}>
-            {/* show a different view depending on whether Quicklist is populated */}
-            { (quicklist.length>0) 
-                
+        <View style={viewStyles.modal}>
+            <View style={viewStyles.overall}>
+                { (page===1) 
                 ?
-
-                <View style={styles.overallView}>
-                    { (page===1) ?
-                    <View style={styles.inputScrollView}>
-                        <View style={styles.textInputView}>
-                            <TextInput 
-                                    selectionColor="#f7f7f7" 
-                                    placeholderTextColor="#adadad"
-                                    style={styles.textInput} 
-                                    returnKeyType="done"  
-                                    placeholder={"New Meal"}
-                                    onSubmitEditing={(value) => newMealName(value.nativeEvent.text) }>
-                            </TextInput>
-                        </View>
-                        <ScrollView style={styles.scrollview}>
-                        <View style={styles.exampleBanner}>
-                            <Text style={styles.exampleBannerText}>My Quicklist</Text>
-                        </View> 
-                        {
-                            quicklist.map((food: any, i: number) => {
-                                return <FoodCard key={i} arrayIndex={i} id={food["id"]} image={food["image"]} name={food["name"]} callback={editMeal} mode={1}></FoodCard>
-                            })
-                        }
+                // page 1 encompasses Meal Name selection and Quicklist
+                <View style={viewStyles.inputScroll}>
+                    <View style={viewStyles.textInput}>
+                        <TextInput 
+                                selectionColor="#f7f7f7" 
+                                placeholderTextColor="#adadad"
+                                style={textStyles.textInput} 
+                                returnKeyType="done"  
+                                placeholder={"New Meal"}
+                                onEndEditing={(value) => newMealName(value.nativeEvent.text) }
+                                onSubmitEditing={(value) => newMealName(value.nativeEvent.text) }>
+                        </TextInput>
+                    </View>
+                    { (quicklist.length > 0) 
+                        // show separate message if Quicklist is empty
+                        ?
+                        <ScrollView style={viewStyles.scroll}>
+                            <View style={viewStyles.exampleBanner}>
+                                <Text style={textStyles.exampleBanner}>My Quicklist</Text>
+                            </View> 
+                            {
+                                quicklist.map((food: any, i: number) => {
+                                    return <FoodCard key={i} arrayIndex={i} id={food["id"]} image={food["image"]} name={food["name"]} callback={editMeal} mode={1}></FoodCard>
+                                })
+                            }
                         </ScrollView>
+                        :
+                        <View style={viewStyles.emptyQuicklist}>
+                            <Text style={textStyles.bodyText}>Add items to your Quicklist in Search</Text>
+                            <Button children="Search" style={buttonStyles.singleButton} textColor="#2774AE" labelStyle={textStyles.buttons} onPress={()=>{
+                                        navigation.reset({
+                                            index: 0,
+                                            routes: [{ name: 'Search' }],
+                                        });}}
+                            ></Button>
+                        </View>
+                    }
+
+                </View>
+                :
+                // page 2 is entirely composed of the Search feature
+                <View style={inEditMode ? viewStyles.editScroll:viewStyles.inputScroll}>
+                    <View style={viewStyles.overall}>
+                        <SearchFromMeals toggleButtons={toggleButtons}></SearchFromMeals>
+                    </View>
+                </View>
+                }
+                {/* Buttons on the bottom of screen */}
+                { (inEditMode) 
+                    ?
+                    <View style={buttonStyles.editBottomButtonsView}>
+                        <View style={buttonStyles.closeSaveButtons}>
+                            <Button disabled={hideButtons} children="Close" textColor="#c5050c" labelStyle={textStyles.buttons} style={buttonStyles.twinButtons} onPress={()=> closeModal(1)}></Button>
+                            <Button disabled={hideButtons} children="Save Meal" textColor="#22a811" labelStyle={textStyles.buttons} style={buttonStyles.twinButtons} onPress={()=> closeModal(3)}></Button>
+                        </View>
                     </View>
                     :
-                    <View style={styles.inputScrollView}>
-                        {/* <View style={styles.textInputView}>
-                                <TextInput 
-                                        selectionColor="#f7f7f7" 
-                                        placeholderTextColor="#adadad" 
-                                        style={styles.textInput} 
-                                        returnKeyType="done"  
-                                        placeholder={"New Meal"}
-                                        onSubmitEditing={(value) => newMealName(value.nativeEvent.text) }>
-                                </TextInput>
-                        </View> */}
-                        <View style={{height: '100%'}}>
-                            <SearchFromMeals toggleButtons={toggleButtons}></SearchFromMeals>
+                    <View style={buttonStyles.bottomButtonsView}>
+                        <View style={buttonStyles.changeSearchButtonView}>
+                            <Button disabled={hideButtons} children={(page===1) ? "Search all foods":"Quicklist"} textColor="#2774AE" labelStyle={textStyles.buttons} style={buttonStyles.singleButton} onPress={changePage}></Button>
                         </View>
-                    </View>
-                    }
-                    
-                    <View style={styles.bottomButtonsView}>
-                        <View style={styles.changeSearchButtonView}>
-                            <Button disabled={hideButtons} children={(page===1) ? "Search all foods":"Quicklist"} textColor="#2774AE" labelStyle={styles.buttonText} style={styles.singleButton} onPress={changePage}></Button>
-                        </View>
-                        <View style={styles.closeButtonsView}>
-                            <View style={styles.closeSaveButtons}>
-                                <Button disabled={hideButtons} children="Close" textColor="#c5050c" labelStyle={styles.buttonText} style={styles.twinButtons} onPress={()=> closeModal(1)}></Button>
-                                <Button disabled={hideButtons} children="Save" textColor="#22a811" labelStyle={styles.buttonText} style={styles.twinButtons} onPress={()=> closeModal(2)}></Button>
+                        <View style={buttonStyles.closeButtonsView}>
+                            <View style={buttonStyles.closeSaveButtons}>
+                                <Button disabled={hideButtons} children="Close" textColor="#c5050c" labelStyle={textStyles.buttons} style={buttonStyles.twinButtons} onPress={()=> closeModal(1)}></Button>
+                                <Button disabled={hideButtons} children="Save Meal" textColor="#22a811" labelStyle={textStyles.buttons} style={buttonStyles.twinButtons} onPress={()=> closeModal(2)}></Button>
                             </View>
                         </View>
                     </View>
-                    
-
-
-                </View>
-
-                :
-
-                // if the Quicklist is empty, lead user to Search
-                <View>
-                    <View style={styles.emptyQuicklist}>
-                            <Text style={styles.text}>Add items to your Quicklist in Search</Text>
-                            <Button children="Search" textColor="#2774AE" labelStyle={styles.buttonText} onPress={()=>{
-                                navigation.reset({
-                                    index: 0,
-                                    routes: [{ name: 'Search' }],
-                                });
-                                }}></Button>
-                    </View>
-
-                    <View style={styles.altBottomButtonsView}>
-                        <Button children="Close" textColor="#2774AE" labelStyle={styles.buttonText} style={styles.singleButton} onPress={() => navigation.goBack()}></Button>
-                    </View>
-                </View>
-            }
-
+                }
+            </View>
         </View>     
         </CurrentMealContext.Provider>
     )
 }
 
-const styles = StyleSheet.create({
-    overallView: {
+const viewStyles = StyleSheet.create({
+    overall: {
         height: '100%',
-        width: '100%'
+        width: '100%',
     },
-    scrollview: {
-        height: '90%'
+    centered: {
+        height: '100%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    scroll: {
+        height: '90%',
+    },
+    editScroll: {
+        height: '85%',
     },
     modal: {
         alignItems: 'center',
         backgroundColor: 'white',
     },
-    inputScrollView:{
+    inputScroll:{
         height: '82.5%'
+    },
+    header: {
+        textTransform: 'capitalize',
+        fontSize: 24
+    },
+    emptyQuicklist: {
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    textInput: {
+        height: '10%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    exampleBanner: {
+        padding: 12,
+    },
+})
+
+const textStyles = StyleSheet.create({
+    buttons: {
+        fontSize: 20,
+        fontWeight: '300'
+    },
+    exampleBanner: {
+        fontSize: 20,
+        fontWeight: '300',
+        paddingLeft: 10
+    },
+    bodyText: {
+        fontSize: 20,
+        fontWeight: '300',
+        paddingBottom: 10
+    },
+    textInput: {
+        borderWidth: 1,
+        borderColor: '#646569',
+        width: '50%',
+        height: 40,
+        padding: 7.5,
+        fontSize: 18,
+        fontWeight: '300'
+    }
+})
+
+const buttonStyles = StyleSheet.create({
+    editBottomButtonsView: {
+        height: '15%',
+        width: '100%',
+        justifyContent: 'flex-start',
+        paddingTop: 17.5,
+        alignItems: 'center',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#dadfe1'
     },
     bottomButtonsView: {
         height: '17.5%',
         width: '100%'
+    },
+    closeSaveButtons: {
+        flexDirection: 'row',
+        paddingTop: 7.5
     },
     changeSearchButtonView: {
         height: '40%',
@@ -382,59 +494,11 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
-    altBottomButtonsView: {
-        height: '10%',
-        width: '100%',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-    },
-    closeSaveButtons: {
-        flexDirection: 'row',
-        paddingTop: 7.5
-    },
-    header: {
-        textTransform: 'capitalize',
-        fontSize: 24
-    },
-    emptyQuicklist: {
-        height: '90%',
-        justifyContent: 'center'
-    },
-    text: {
-        fontSize: 20,
-        fontWeight: '300',
-        paddingBottom: 10
-    },
     singleButton: {
         width: 300,
     },
     twinButtons: {
         width: 170
-    },
-    buttonText: {
-        fontSize: 20,
-        fontWeight: '300'
-    },
-    textInputView: {
-        height: '10%',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    textInput: {
-        borderWidth: 1,
-        borderColor: '#646569',
-        width: '50%',
-        height: 40,
-        padding: 7.5,
-        fontSize: 18,
-        fontWeight: '300'
-    },
-    exampleBanner: {
-        padding: 12
-    },
-    exampleBannerText: {
-        fontSize: 20,
-        fontWeight: '300',
-        paddingLeft: 10
     }
+    
 })

@@ -3,18 +3,12 @@ import React, { useState } from 'react'
 import { StyleSheet, Text, View, Image, Pressable, TextInput } from "react-native";
 import { Card } from "react-native-paper";
 import { Entypo } from '@expo/vector-icons'; 
-
-interface Food {
-    [key: string]: any,
-    id: number,
-    image: string,
-    name: string
-}
+import { IFood } from '../interfaces/Interfaces';
 
 const imageSize = "100x100";
 const imageUrl = "https://spoonacular.com/cdn/ingredients_"
 
-export default function FoodCard(props: Food) {
+export default function FoodCard(props: IFood) {
 
     const [isPressed, setIsPressed] = useState<Boolean>(false)
 

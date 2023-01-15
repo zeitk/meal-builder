@@ -12,7 +12,6 @@ export default function Home({ navigation }:any) {
             <Text style={styles.bodyText}>   https://spoonacular.com/food-api/docs</Text>
             <Text style={styles.bodyText}>This app allows you to search for foods and view their information, and combine foods into meals and view the combined nutritional information.</Text>
 
-            <Text style={styles.header}>Sections</Text>
             <Text style={styles.subHeader}>Search</Text>
             <Text style={styles.bodyText}>In the 'Search' tab you can search for foods and view their nutritional information. When viewing a specific food, you can add that food to your Quicklist, which acts as a favorites list of foods</Text>
             <Text style={styles.bodyText}>'Search' will automatically load with an example search to show what a typical query will return</Text>

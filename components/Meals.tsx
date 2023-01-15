@@ -1,22 +1,21 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button } from 'react-native-paper';
-import MealListContext from '../context/MealList';
+import { useMealList } from '../context/MealList';
 import MealCard from './MealCard';
 
 
-export default function Meals({ navigation, route }: any) {
+export default function Meals({ navigation }: any) {
 
-    const [mealList] = useContext(MealListContext)
+    const { mealList } = useMealList();
 
     useEffect(() => {
-        
     },[])
 
     return<>
         <SafeAreaView style={styles.safeView}>
-            { (mealList.length>0) ?
+            { (mealList !== null && mealList.length>0) ?
                 <ScrollView style={styles.scrollView}>
                     {
                         mealList.map((meal: any, i: number) => {

@@ -1,17 +1,18 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useState } from "react";
 import { StyleSheet, Text, View, Image, Pressable, Button, Alert } from "react-native";
 import { Card } from "react-native-paper";
 import { Feather } from '@expo/vector-icons'; 
-import MealListContext from '../context/MealList';
+import { useMealList } from '../context/MealList';
 
 const imageSize = "100x100";
 const imageUrl = "https://spoonacular.com/cdn/ingredients_"
 
-export default function MealCard(props: any, { navigation }: any ) {
+export default function MealCard(props: any) {
 
     const [images, setImages] = useState<String[]>([])
-    const [mealList, setMeallist] = useContext(MealListContext)
+    //const  { mealList, setMealList } = useContext(MealListContext)
+    const  { mealList, setMealList } = useMealList();
 
     useEffect(() => {
         const foods = props["foods"]
@@ -27,7 +28,8 @@ export default function MealCard(props: any, { navigation }: any ) {
     }
 
     function deleteMeal() {
-        setMeallist(
+        if (!mealList) return;
+        setMealList(
             mealList.filter((meal:any) => meal["id"] !== props["id"])
         );
     }

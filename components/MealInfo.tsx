@@ -1,9 +1,9 @@
 import React, { useRef } from "react";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Button, Portal } from "react-native-paper";
 
-import MealListContext from "../context/MealList";
+import { useMealList } from "../context/MealList";
 import FoodCard from "./FoodCard";
 import CostTable from "./Tables/CostTable";
 import FlavonoidsTable from "./Tables/FlavonoidsTable";
@@ -11,13 +11,13 @@ import NutritionTable from "./Tables/NutritionTable";
 import FoodModal from "./FoodModal";
 
 
-export default function MealInfo({ navigation, route }: any, props: any) {
+export default function MealInfo({ navigation, route }: any) {
 
     // states
     const [page, setPage] = useState<number>(1);
     const [multiplier, setMultiplier] = useState<number>(1);
     const [isNameEditing, setIsNameEditing] = useState<boolean>(false)
-    const [mealList, setMealList] = useContext(MealListContext);
+    const {mealList, setMealList} = useMealList();
     const [name, setName] = useState<string>("")
 
     // modal related states
@@ -27,6 +27,12 @@ export default function MealInfo({ navigation, route }: any, props: any) {
     const [viewedFoodNutrition, setViewedFoodNutrition] = useState<any>({});
     const [foodModalVisible, setFoodModalVisible] = useState<boolean>(false);
     const [viewedFoodServings, setViewedFoodServings] = useState<any>({})
+
+    if (!mealList) {
+        throw new Error(
+            "mealList must be accessed through MealListContext.Provider"
+        );
+    }
 
     // non-state constants
     var mealIndex = 0;
@@ -85,6 +91,9 @@ export default function MealInfo({ navigation, route }: any, props: any) {
 
     function newMealName(newName: string) {
 
+        // TODO: find a more graceful exit
+        if (mealList === null) return
+
         if (newName==="") {
             setIsNameEditing(false)
             return
@@ -128,10 +137,11 @@ export default function MealInfo({ navigation, route }: any, props: any) {
         })
     }
 
+    // this tag is used to either remove a food or to update a quantity
     function editMealFoods(newMultiplier: number) {
         
-        // this tag is used to either remove a food or to update a quantity
-
+        // TODO: find a more graceful exit
+        if (mealList === null) return
         // have flag for if we remove only food in list
         let haveRemovedLast = false;
         const updatedMealList = mealList.map((meal: any, index: number) => {
@@ -140,7 +150,7 @@ export default function MealInfo({ navigation, route }: any, props: any) {
                 let updatedFoods;
 
                 // if we're updating the quantity of the food, update only quantity and multiplier of the new food
-                if (newMultiplier>0) {
+                if (newMultiplier>=0) {
                     updatedFoods = meal["foods"].map((food: any) => {
                         if (food["id"] === viewedFoodId) {
                             const newQuantity = (food["weightPerServing"]["amount"]*newMultiplier).toFixed(2);
@@ -156,6 +166,7 @@ export default function MealInfo({ navigation, route }: any, props: any) {
 
                 // if we're removing a food, filter it out from the meal
                 else {
+                    setFoodModalVisible(false);
                     updatedFoods = meal["foods"].filter((food: any) => food["id"] != viewedFoodId )
                     if (updatedFoods.length===0) {
                         // return early to avoid updating all nutritional data
@@ -176,16 +187,12 @@ export default function MealInfo({ navigation, route }: any, props: any) {
             else return meal
         })
 
-        setFoodModalVisible(false);
-
         // delete meal if last food removed, update mealList otherwise
         if (haveRemovedLast) {
             setMealList( mealList.filter((meal:any) => meal["id"] !== route.params["id"]) ); 
             navigation.goBack();
         }
         else  setMealList(updatedMealList)
-
-
     }
 
     function updateMealData(updatedFoods: any) {
@@ -243,7 +250,7 @@ export default function MealInfo({ navigation, route }: any, props: any) {
                 // sum up cost
                 if (overallCost["unit"]===currentFoodCost["unit"]) overallCost["value"] += Number((currentFoodCost["value"]*multiplier).toFixed(2))
 
-                // remove this later
+                // hasn't happened yet, but should be on the watchout
                 else {
                     console.error("Mismatching cost units")
                 }
@@ -327,6 +334,7 @@ export default function MealInfo({ navigation, route }: any, props: any) {
                             placeholder={name}
                             placeholderTextColor="#adadad"
                             returnKeyType="done" 
+                            textAlign="center"
                             maxLength={20}
                             onEndEditing={(value) => newMealName(value.nativeEvent.text) }
                             onSubmitEditing={(value) => newMealName(value.nativeEvent.text) } 
@@ -483,16 +491,15 @@ const textStyles = StyleSheet.create({
     mealName: {
         fontSize: 24,
         fontWeight: '300',
-        width: 150,
         padding: 7.5,
     },
     mealNameTextInput: {
         fontSize: 24,
         fontWeight: '300',
-        width: 150,
+        width: 200,
         padding: 7.5,
         borderWidth: 1,
-        borderColor: '#646569'
+        borderColor: '#646569',
     },
     editButton: {
         fontSize: 12
@@ -503,7 +510,7 @@ const textStyles = StyleSheet.create({
     },
     servingTextInput: {
         width: '12.5%',
-        height: '75%',
+        height: '100%',
         padding: 5,
         paddingVertical: 10,
         borderWidth: 1,

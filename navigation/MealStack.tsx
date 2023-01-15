@@ -4,17 +4,17 @@ import React, { useState } from 'react'
 import MealBuilder from '../components/MealBuilder';
 import MealInfo from '../components/MealInfo';
 import Meals from '../components/Meals';
-import MealListContext from '../context/MealList';
-import { Meal } from '../interfaces/Interfaces'
+import { MealListContext } from '../context/MealList';
+import { IMeal } from '../interfaces/Interfaces'
 
 const MealStackNavigator = createNativeStackNavigator();
 
 export default function MealStack() {
 
-    const [mealList, setMealList] = useState<any[]>([])
+    const [mealList, setMealList] = useState<IMeal[]>([])
 
     return (
-        <MealListContext.Provider value={[mealList, setMealList]}>
+        <MealListContext.Provider value={{mealList, setMealList}}>
 
         <MealStackNavigator.Navigator>
           <MealStackNavigator.Group>

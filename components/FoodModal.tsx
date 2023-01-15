@@ -90,9 +90,9 @@ export default function FoodModal(props: any) {
         if (props.context==="Quicklist") toggleModal()
     }
 
-    function removeFromMeal() {
-        props.editMealFoods(-1)
+    function removeFromMeal() {   
         Alert.alert("Removed", capitalize(props.name)+" has been removed from the current meal")
+        props.editMealFoods(-1)
     }
 
     function addToMeal() {

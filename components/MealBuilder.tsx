@@ -4,40 +4,35 @@ import { Alert, ScrollView, TextInput } from 'react-native';
 import { StyleSheet, Text, View } from "react-native";
 import { Button } from "react-native-paper";
 import CurrentMealContext from '../context/CurrentMeal';
-import MealListContext from '../context/MealList';
+import { useMealList }  from '../context/MealList';
 import QuicklistContext from '../context/QuicklistContext';
 import FoodCard from './FoodCard';
-import { Meal } from '../interfaces/Interfaces'
+import { IMeal } from '../interfaces/Interfaces'
 import SearchFromMeals from './SearchFromMeals';
 
-export default function MealBuilder({ navigation, route }: any,props: any) {
+export default function MealBuilder({ navigation, route }: any) {
 
     // states
-    const [quicklist, setQuicklist] = useContext(QuicklistContext);
-    const [currentMeal, setCurrentMeal] = useState<any>({});
-    const [mealList, setMealList] = useContext(MealListContext);
+    const [quicklist] = useContext(QuicklistContext);
+    const [currentMeal, setCurrentMeal] = useState<IMeal>({ id: 0, name: "", foods: [], data: {}});
+    const { mealList, setMealList } = useMealList();
     const [page, setPage] = useState<number>(1);
     const [hideButtons, setHideButtons] = useState<boolean>(false);
     const [inEditMode, setInEditMode] = useState<boolean>(false);
     
     useEffect(() =>{
-
         setPage(1);
         setHideButtons(false);
 
         if (route.params === undefined) newMeal();
-        else existingMeal(route.params);
+        else existingMeal(route.params.meal);
     },[])
 
     function newMeal() {
         // if list is empty set Id to 1
         // else set id to the last id in array plus 1, in the case of deletion
         let mealId;
-        const mealArrayLength = mealList.length;
-        if (mealArrayLength===0) mealId=1
-        else {
-            mealId = mealList[mealArrayLength-1]["id"]+1;
-        }
+        (mealList !== null && mealList.length === 0) ? mealId=1:mealId = mealList![mealList!.length-1]["id"]+1;
         setCurrentMeal({
             id: mealId,
             name:"Meal "+mealId,
@@ -46,10 +41,10 @@ export default function MealBuilder({ navigation, route }: any,props: any) {
         })
     }
 
-    function existingMeal(params: any) {
-
-        if (params.meal===undefined) navigation.goBack();
-        const meal = params.meal
+    function existingMeal(meal: any) {
+        // should never happen, sanity check
+        if (meal===undefined) navigation.goBack();
+        // load in current meal, and place in search mode
         setCurrentMeal({
             id: meal["id"],
             name: meal["name"],
@@ -77,7 +72,7 @@ export default function MealBuilder({ navigation, route }: any,props: any) {
             });
         }
 
-        // adding a food`
+        // adding a food
         else if (mode === 2 && quantity === -1) {
             selectedFood["multiplier"]=1
             selectedFood["quantity"]=selectedFood["weightPerServing"]["amount"]
@@ -242,7 +237,7 @@ export default function MealBuilder({ navigation, route }: any,props: any) {
             if (currentMeal["foods"].length > 0) {
                 Alert.alert(
                     'Unsaved changes',
-                    'Are you sure you want to leave?',[
+                    'Are you sure you want to close?',[
                         { text: 'Cancel', onPress: () => {}, style: 'cancel'},
                         { text: 'Yes', onPress: () => { navigation.goBack() } },
                     ],
@@ -264,7 +259,7 @@ export default function MealBuilder({ navigation, route }: any,props: any) {
             const newMeal = saveMealData()
 
             setMealList([
-                ...mealList,
+                ...mealList!,
                 newMeal
             ])
             
@@ -276,7 +271,7 @@ export default function MealBuilder({ navigation, route }: any,props: any) {
         else if (mode===3) {
             const updatedMeal = saveMealData();
 
-            const updatedMealList = mealList.map((meal: any) => {
+            const updatedMealList = mealList!.map((meal: any) => {
                 if (meal["id"] === updatedMeal["id"]) {
                     return updatedMeal
                 }
@@ -312,7 +307,7 @@ export default function MealBuilder({ navigation, route }: any,props: any) {
     }
 
     return (
-        <CurrentMealContext.Provider  value={[currentMeal, setCurrentMeal]}>
+        <CurrentMealContext.Provider  value={{currentMeal, setCurrentMeal}}>
         <View style={viewStyles.modal}>
             <View style={viewStyles.overall}>
                 { (page===1) 
@@ -326,6 +321,7 @@ export default function MealBuilder({ navigation, route }: any,props: any) {
                                 style={textStyles.textInput} 
                                 returnKeyType="done"  
                                 placeholder={"New Meal"}
+                                textAlign="center"
                                 onEndEditing={(value) => newMealName(value.nativeEvent.text) }
                                 onSubmitEditing={(value) => newMealName(value.nativeEvent.text) }>
                         </TextInput>
@@ -350,7 +346,8 @@ export default function MealBuilder({ navigation, route }: any,props: any) {
                                         navigation.reset({
                                             index: 0,
                                             routes: [{ name: 'Search' }],
-                                        });}}
+                                        });
+                                    }}
                             ></Button>
                         </View>
                     }

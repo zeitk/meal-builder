@@ -1,13 +1,13 @@
 import React from 'react'
 
-import { useEffect, useState } from "react";
-import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard, Text } from "react-native";
-import { Button, Portal } from "react-native-paper";
-import { Feather, Entypo } from "@expo/vector-icons";
+import { useEffect, useState, useRef } from "react";
+import {  View, StyleSheet, SafeAreaView, ScrollView, Text } from "react-native";
+import { Portal } from "react-native-paper";
 
 
 import FoodCard from "./FoodCard";
 import FoodModal from "./FoodModal";
+import { SearchBar } from './SearchBar';
 
 interface Food {
     [key: string]: any,
@@ -17,12 +17,6 @@ interface Food {
     name: string,
     possibleUnits: Array<string>
 }
-
-const slogans: string[] = [
-    "Watcha feeling?",
-    "Ex: Potato",
-    "Search for anything!"
-]
 
 const examples: string[] = [
     "Potato",
@@ -35,9 +29,7 @@ export default function Search({ navigation }: any) {
     // search related states
     const [items, setItems] = useState([]);
     const [totalItems, setTotalItems] = useState(-1);
-    const [searchString, setSearchString] = useState("");
-    const [pressed, setPressed] = useState(false);
-    const [slogan, setSlogan] = useState("")
+    const scrollRef = useRef<ScrollView | null>(null);
 
     // modal and table related states
     const [exampleBanner, setExampleBanner] = useState<String>("")
@@ -62,24 +54,18 @@ export default function Search({ navigation }: any) {
         navigation.addListener('tabPress', () => {
             setModalVisible(false)
         });
-        
-        // set searchbar text placeholder
-        setSlogan(slogans[(Math.floor(Math.random()*slogans.length))])
     },[navigation])
 
-    const beginSearch = () => {
+    const beginSearch = (input: string) => {
         // don't search if there's nothing to search for, or if we just pressed cancel
-        if (searchString==="") return
+        if (input==="") return
 
         // get rid of example banner and begin search
         setExampleBanner("")
-        searchItems(searchString)
+        searchItems(input)
     }
 
     const searchItems = ((input: any) => {
-
-        // change our placeholder
-        setSlogan(slogans[(Math.floor(Math.random()*slogans.length))])
 
         const params = {
             query: input,
@@ -105,8 +91,10 @@ export default function Search({ navigation }: any) {
                 sortItems(json.results)
                 setTotalItems(json.totalResults);
             })
-        setSearchString("");
-        setPressed(false);
+        scrollRef.current?.scrollTo({
+            y: 0,
+            animated: false
+        });
     })
 
     function sortItems(items: any) {
@@ -164,45 +152,7 @@ export default function Search({ navigation }: any) {
 
     return <>
         <SafeAreaView style={styles.safeView}>
-            <View style={styles.container}>
-                <View style={
-                    pressed
-                        ? styles.searchbar_pressed
-                        : styles.searchbar_unpressed
-                }>
-                    <Feather
-                        name="search"
-                        size={20}
-                        color="black"
-                        style={styles.feather}
-                    ></Feather>
-                    <TextInput
-                        style={styles.input}
-                        value={searchString}
-                        onChangeText={setSearchString}
-                        placeholder={slogan}
-                        returnKeyType="search"
-                        onEndEditing={beginSearch}
-                        onFocus={() => { setPressed(true) }} >
-                    </TextInput>
-                    {pressed && (
-                        <Entypo
-                            name="cross" size={20} color="black" style={styles.entypo}
-                            onPress={() => { setSearchString("") }}>
-                        </Entypo>
-                    )}
-                </View>
-                {/* show cancel button if searchbar is pressed */}
-                {pressed && (
-                    <View>
-                        <Button children="Cancel" textColor="#c5050c" onPress={() => {
-                            setSearchString("")
-                            Keyboard.dismiss();
-                            setPressed(false);
-                        }}></Button>
-                    </View>
-                )}
-            </View>
+            <SearchBar callback={beginSearch} placeholderTextColor={"#646569"}></SearchBar>
             { (totalItems<1) &&
                 <View style={styles.messageTextView}>
                     { (totalItems===0) ?
@@ -212,7 +162,7 @@ export default function Search({ navigation }: any) {
                    
                 </View>
             }
-            <ScrollView style={styles.scrollView}>
+            <ScrollView ref={scrollRef} style={styles.scrollView}>
                 {exampleBanner!=="" && (
                     <View style={styles.exampleBanner}>
                         <Text style={styles.exampleBannerText}>Example Search - {exampleBanner}</Text>

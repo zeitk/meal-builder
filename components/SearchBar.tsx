@@ -11,7 +11,12 @@ const slogans: string[] = [
     "Search for anything!"
 ]
 
-export function SearchBar() {
+interface ISearchBarProps {
+    callback: (input: string) => void,
+    placeholderTextColor: string
+}
+
+export function SearchBar(props: ISearchBarProps) {
 
     const [searchString, setSearchString] = useState("");
     const [pressed, setPressed] = useState(false);
@@ -21,8 +26,15 @@ export function SearchBar() {
         setSlogan(slogans[(Math.floor(Math.random()*slogans.length))])
     }, [])
 
+    function beginSearch() {
+        props.callback(searchString);
+        setSearchString("");
+        setPressed(false);
+        setSlogan(slogans[(Math.floor(Math.random()*slogans.length))])
+    }
+
     return(
-        <View>
+        <View style={styles.container}>
         <View style={
             pressed
                 ? styles.searchbar_pressed
@@ -35,12 +47,13 @@ export function SearchBar() {
                 style={styles.feather}
             ></Feather>
             <TextInput
+                placeholderTextColor={props.placeholderTextColor}
                 style={styles.input}
-                //value={searchString}
-                //onChangeText={setSearchString}
+                value={searchString}
+                onChangeText={setSearchString}
                 placeholder={slogan}
                 returnKeyType="search"
-                //onEndEditing={beginSearch}
+                onEndEditing={beginSearch}
                 onFocus={() => { setPressed(true) }} >
             </TextInput>
             {pressed && (
@@ -65,15 +78,6 @@ export function SearchBar() {
 }
 
 const styles = StyleSheet.create({
-    safeView: {
-        flex: 1,
-        backgroundColor: '#f9f9f9'
-    },
-    scrollView: {
-        backgroundColor: '#dadfe1',
-        height: '100%',
-        paddingTop: 5
-    },
     container: {
         margin: 15,
         width: '90%',
@@ -87,23 +91,6 @@ const styles = StyleSheet.create({
         fontWeight: '300',
         width: '90%',
         marginLeft: 10,
-    },
-    exampleBanner: {
-        padding: 12
-    },
-    exampleBannerText: {
-        fontSize: 20,
-        fontWeight: '300'
-    },
-    messageTextView: {
-        backgroundColor: '#dadfe1',
-        height: '100%',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    foodCateogoryText: {
-        fontSize: 16,
-        fontWeight: '300'
     },
     feather: {
         marginLeft: 1

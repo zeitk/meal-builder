@@ -1,9 +1,8 @@
 import React, { useContext, useRef } from 'react'
 
 import { useEffect, useState } from "react";
-import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard, Text } from "react-native";
-import { Button, Portal } from "react-native-paper";
-import { Feather, Entypo } from "@expo/vector-icons";
+import {  View, StyleSheet, SafeAreaView, ScrollView, Text } from "react-native";
+import { Portal } from "react-native-paper";
 
 import FoodCard from "./FoodCard";
 import FoodModal from "./FoodModal";

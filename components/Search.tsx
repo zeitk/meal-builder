@@ -4,7 +4,6 @@ import { useEffect, useState, useRef } from "react";
 import {  View, StyleSheet, SafeAreaView, ScrollView, Text } from "react-native";
 import { Portal } from "react-native-paper";
 
-
 import FoodCard from "./FoodCard";
 import FoodModal from "./FoodModal";
 import { SearchBar } from './SearchBar';

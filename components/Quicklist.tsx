@@ -7,7 +7,7 @@ import FoodModal from "./FoodModal";
 
 export default function Quicklist({ navigation }: any) {
 
-    const [quicklist, setQuicklist] = useContext(QuicklistContext)
+    const [quicklist] = useContext(QuicklistContext)
     const [viewedFoodId, setViewedFoodId] = useState<number>()
     const [viewedFoodName, setViewedFoodName] = useState<String>()
     const [viewedFoodImage, setViewedFoodImage] = useState<String>()

@@ -1,9 +1,11 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useContext } from 'react'
 import { useEffect, useState } from "react";
 import { Alert } from 'react-native';
 import { StyleSheet, Text, View } from "react-native";
 import { Button, Modal, Portal } from "react-native-paper";
 import QuicklistContext from '../context/QuicklistContext';
+import { IFood } from '../interfaces/Interfaces';
 import CaloricBreakdownTable from "./Tables/CaloricBreakdownTable";
 import CostTable from "./Tables/CostTable";
 import FlavonoidsTable from "./Tables/FlavonoidsTable";
@@ -52,6 +54,15 @@ export default function FoodModal(props: any) {
         if (!found) setIsInQuicklist(false);
     }
 
+    async function saveQuicklist(updatedQuicklist: IFood[]) {
+        try {
+            await AsyncStorage.setItem('@quicklist', JSON.stringify(updatedQuicklist))
+        }
+        catch(e) {
+            console.error("Error 7", "Save error in FoodModal.tsx")
+        }
+    }
+
     // add this item to the quicklist
     function addToQuicklist() {
 
@@ -69,10 +80,12 @@ export default function FoodModal(props: any) {
             }
         });
         
-        setQuicklist([
+        const updatedQuicklist = [
             ...quicklist,
             foodObject
-        ])
+        ]
+        setQuicklist(updatedQuicklist)
+        saveQuicklist(updatedQuicklist)
         setIsInQuicklist(true);
 
         Alert.alert("Added", capitalize(props.name)+" has been added to your Quicklist")
@@ -81,6 +94,7 @@ export default function FoodModal(props: any) {
     function removeFromQuicklist() {
         const updatedQuicklist = quicklist.filter((food: any) => food["id"] !== props.id)
         setQuicklist(updatedQuicklist)
+        saveQuicklist(updatedQuicklist)
 
         // in Search the buttons should switch, in Quicklist the modal should close
         if (props.context==="Search") {

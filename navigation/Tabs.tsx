@@ -6,16 +6,32 @@ import Home from '../components/Home';
 import Search from "../components/Search";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import QuicklistContext from '../context/QuicklistContext';
 import MealStack from './MealStack';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const TabNavigator = createBottomTabNavigator();
 
 export default function Tabs() {
     
     const [quicklist, setQuicklist] = useState<any[]>([])
-    // TODO add login capabilities 
+    
+    useEffect(() => {
+        getQuicklist();
+    }, [])
+
+    async function getQuicklist() {
+        try {
+            const priorQuicklist = await AsyncStorage.getItem('@quicklist')
+            if (priorQuicklist !== null) {
+                setQuicklist( JSON.parse(priorQuicklist) )
+            }
+        }
+        catch(e) {
+            console.error("Error 8", "Retrieval failure in Tabs.tsx")
+        }
+    }
 
     return<>
         <QuicklistContext.Provider value={[quicklist,setQuicklist]}>

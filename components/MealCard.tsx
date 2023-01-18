@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState } from "react";
 import { StyleSheet, Text, View, Image, Pressable, Button, Alert } from "react-native";
 import { Card } from "react-native-paper";
 import { Feather } from '@expo/vector-icons'; 
 import { useMealList } from '../context/MealList';
+import { IMeal } from '../interfaces/Interfaces'
 
 const imageSize = "100x100";
 const imageUrl = "https://spoonacular.com/cdn/ingredients_"
@@ -11,27 +13,43 @@ const imageUrl = "https://spoonacular.com/cdn/ingredients_"
 export default function MealCard(props: any) {
 
     const [images, setImages] = useState<String[]>([])
-    //const  { mealList, setMealList } = useContext(MealListContext)
     const  { mealList, setMealList } = useMealList();
 
     useEffect(() => {
-        const foods = props["foods"]
+        updateImages(props["foods"])
+    },[mealList])
+
+    function updateImages(foods: any) {
+
         let newImages:String[] = [];
         foods.forEach((food: any) => {
             newImages.push(food["image"])
         })
         setImages(newImages)
-    },[mealList])
+
+    }
 
     function showMoreInfo() {
         props.navigation.navigate('MealInfo', { id: props["id"] })
     }
 
+    // store updated mealList to persistant memory
     function deleteMeal() {
         if (!mealList) return;
+        const updatedMealList = mealList.filter((meal:any) => meal["id"] !== props["id"])
+        updateMealList(updatedMealList)
         setMealList(
-            mealList.filter((meal:any) => meal["id"] !== props["id"])
+            updatedMealList
         );
+    }
+
+    async function updateMealList(updatedMealList: IMeal[]) {
+        try {
+            await AsyncStorage.setItem('@meallist', JSON.stringify(updatedMealList))
+        }
+        catch(e) {
+            console.error("Error 5", "Deletion failure in MealCard.tsx")
+        }
     }
 
     function deleteButton() {

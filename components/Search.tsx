@@ -3,45 +3,38 @@ import React from 'react'
 import { useEffect, useState, useRef } from "react";
 import {  View, StyleSheet, SafeAreaView, ScrollView, Text } from "react-native";
 import { Portal } from "react-native-paper";
+import { IFood } from '../interfaces/Interfaces';
 
 
 import FoodCard from "./FoodCard";
 import FoodModal from "./FoodModal";
 import { SearchBar } from './SearchBar';
 
-interface Food {
-    [key: string]: any,
-    aisle: string,
-    id: number,
-    image: string,
-    name: string,
-    possibleUnits: Array<string>
-}
-
 const examples: string[] = [
     "Potato",
     "Broccoli",
-    "Bread"
+    "Bread",
+    "Corn"
 ]
 
-export default function Search({ navigation }: any) {
+export default function Search({ navigation } : any) {
 
     // search related states
-    const [items, setItems] = useState([]);
-    const [totalItems, setTotalItems] = useState(-1);
+    const [items, setItems] = useState<any>([]);
+    const [totalItems, setTotalItems] = useState<number>(-1);
     const scrollRef = useRef<ScrollView | null>(null);
 
     // modal and table related states
     const [exampleBanner, setExampleBanner] = useState<String>("")
     const [nutrition, setNutrition] = useState<any>({})
-    const [modalVisible, setModalVisible] = useState(false);
-    const [cost, setCost] = useState([]);
-    const [currentId, setCurrentId] = useState("");
-    const [currentName, setCurrentName] = useState("");
-    const [currentImage, setCurrentImage] = useState("");
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [cost, setCost] = useState<any>([]);
+    const [currentId, setCurrentId] = useState<string>("");
+    const [currentName, setCurrentName] = useState<string>("");
+    const [currentImage, setCurrentImage] = useState<string>("");
 
     useEffect(() => {
-
+        
         //reset total items
         setTotalItems(-1)
 
@@ -51,9 +44,12 @@ export default function Search({ navigation }: any) {
         setExampleBanner(searchExample)
 
         // close modal if it's open
-        navigation.addListener('tabPress', () => {
-            setModalVisible(false)
-        });
+        if (navigation.getState().type === "tab") {
+            navigation.addListener('tabPress', () => {
+                setModalVisible(false)
+            });
+        }
+
     },[navigation])
 
     const beginSearch = (input: string) => {
@@ -143,6 +139,7 @@ export default function Search({ navigation }: any) {
         else {
             setModalVisible(true);
         }
+
     }
 
     function toggleModal() {
@@ -169,7 +166,7 @@ export default function Search({ navigation }: any) {
                     </View> 
                 )}
                 {
-                    items.map((item: Food, i) => {
+                    items.map((item: IFood, i: number) => {
                         if (i === 0 || (i > 0 && items[i-1]["aisle"]!==items[i]["aisle"])) {
                             return(
                                 <View key={i} >

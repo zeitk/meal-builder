@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Button, Portal } from "react-native-paper";
@@ -9,6 +10,7 @@ import CostTable from "./Tables/CostTable";
 import FlavonoidsTable from "./Tables/FlavonoidsTable";
 import NutritionTable from "./Tables/NutritionTable";
 import FoodModal from "./FoodModal";
+import { IMeal } from "../interfaces/Interfaces";
 
 
 export default function MealInfo({ navigation, route }: any) {
@@ -57,7 +59,7 @@ export default function MealInfo({ navigation, route }: any) {
         setFoodModalVisible(false)
     }, [])
 
-    function closeModal(mode: number) {
+    function closeModal() {
         //close modal
         navigation.goBack()
     }
@@ -112,6 +114,7 @@ export default function MealInfo({ navigation, route }: any) {
             }
             else return meal
         })
+        saveMealList(updatedMealList)
         setMealList(updatedMealList)
     }
 
@@ -189,10 +192,15 @@ export default function MealInfo({ navigation, route }: any) {
 
         // delete meal if last food removed, update mealList otherwise
         if (haveRemovedLast) {
-            setMealList( mealList.filter((meal:any) => meal["id"] !== route.params["id"]) ); 
+            const updatedMealList_deletion = mealList.filter((meal:any) => meal["id"] !== route.params["id"])
+            saveMealList(updatedMealList_deletion);
+            setMealList(updatedMealList_deletion); 
             navigation.goBack();
         }
-        else  setMealList(updatedMealList)
+        else {
+            saveMealList(updatedMealList)
+            setMealList(updatedMealList)
+        }
     }
 
     function updateMealData(updatedFoods: any) {
@@ -322,6 +330,16 @@ export default function MealInfo({ navigation, route }: any) {
         return newData;
     }
 
+    // store updated mealList to persistant memory
+    async function saveMealList(updatedMealList: IMeal[]) { 
+        try {
+            await AsyncStorage.setItem('@meallist', JSON.stringify(updatedMealList))
+        }
+        catch {
+            console.error("Error 6", "Save failure in MealInfo.tsx")
+        }
+    }
+
     return (
         <View >
             
@@ -402,7 +420,7 @@ export default function MealInfo({ navigation, route }: any) {
                 <Button children={(page===3) ? "Overview":"Foods"} textColor="#2774AE" labelStyle={textStyles.button} style={buttonStyles.leftButton} onPress={()=> prevPage()} disabled={(page<2)}></Button>
                 <Text style={textStyles.pageText}>{page}</Text>
                 <Button children={(page===1) ? "Overview":"More info"} textColor="#2774AE" labelStyle={textStyles.button} style={buttonStyles.rightButton} onPress={()=> nextPage()} disabled={(page>2)}></Button>          
-                <Button children={"Close"} textColor="#c5050c" labelStyle={textStyles.button} style={buttonStyles.closeButton} onPress={()=> closeModal(1)}></Button>
+                <Button children={"Close"} textColor="#c5050c" labelStyle={textStyles.button} style={buttonStyles.closeButton} onPress={()=> closeModal()}></Button>
             </View>
 
             <Portal.Host>

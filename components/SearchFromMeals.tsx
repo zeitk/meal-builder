@@ -1,52 +1,43 @@
 import React, { useContext, useRef } from 'react'
 
 import { useEffect, useState } from "react";
-import {  View, TextInput, StyleSheet, SafeAreaView, ScrollView, Keyboard, Text } from "react-native";
-import { Button, Portal } from "react-native-paper";
-import { Feather, Entypo } from "@expo/vector-icons";
+import {  View, StyleSheet, SafeAreaView, ScrollView, Text } from "react-native";
+import { Portal } from "react-native-paper";
 
 import FoodCard from "./FoodCard";
 import FoodModal from "./FoodModal";
 import CurrentMealContext from '../context/CurrentMeal';
 import { SearchBar } from './SearchBar';
-
-interface Food {
-    [key: string]: any,
-    aisle: string,
-    id: number,
-    image: string,
-    name: string,
-    possibleUnits: Array<string>
-}
+import { IFood } from '../interfaces/Interfaces';
 
 const examples: string[] = [
     "Potato",
     "Beans",
-    "Bread"
+    "Bread",
+    "Corn"
 ]
 
 export default function SearchFromMeals(props: any) {
 
     // search related states
-    const [items, setItems] = useState([]);
-    const [totalItems, setTotalItems] = useState(-1);
+    const [items, setItems] = useState<any>([]);
+    const [totalItems, setTotalItems] = useState<number>(-1);
     const scrollRef = useRef<ScrollView | null>(null)
 
     // modal and table related states
     const [exampleBanner, setExampleBanner] = useState<String>("")
     const [nutrition, setNutrition] = useState<any>({})
-    const [modalVisible, setModalVisible] = useState(false);
-    const [cost, setCost] = useState([]);
-    const [currentId, setCurrentId] = useState("");
-    const [currentName, setCurrentName] = useState("");
-    const [currentImage, setCurrentImage] = useState("");
-    const [currentIsInMeal, setCurrentIsInMeal] = useState<Boolean>(false);
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [cost, setCost] = useState<any>([]);
+    const [currentId, setCurrentId] = useState<string>("");
+    const [currentName, setCurrentName] = useState<string>("");
+    const [currentImage, setCurrentImage] = useState<string>("");
+    const [currentIsInMeal, setCurrentIsInMeal] = useState<boolean>(false);
 
     // meal related context
     const { currentMeal, setCurrentMeal} = useContext(CurrentMealContext)
 
     useEffect(() => {
-
         //reset total items
         setTotalItems(-1)
 
@@ -218,7 +209,6 @@ export default function SearchFromMeals(props: any) {
                         <Text style={styles.exampleBannerText}>Your search returned no items</Text>:
                         <Text style={styles.exampleBannerText}>Loading...</Text>
                     }
-                   
                 </View>
             }
             <ScrollView ref={scrollRef} style={styles.scrollView}>
@@ -229,7 +219,7 @@ export default function SearchFromMeals(props: any) {
                     </View> 
                 )}
                 {
-                    items.map((item: Food, i) => {
+                    items.map((item: IFood, i: number) => {
                         if (i === 0 || (i > 0 && items[i-1]["aisle"]!==items[i]["aisle"])) {
                             // if a new category is beginning, display category name
                             return(

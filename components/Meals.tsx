@@ -1,17 +1,39 @@
 import React, { useEffect } from 'react'
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import { Button } from 'react-native-paper';
 import { useMealList } from '../context/MealList';
 import MealCard from './MealCard';
 
-
 export default function Meals({ navigation }: any) {
 
-    const { mealList } = useMealList();
+    const { mealList, setMealList } = useMealList();
 
     useEffect(() => {
+        getMealList(); 
     },[])
+
+    // utility function in case memory needs to be wiped
+    async function clearMemory() {
+        try {
+            await AsyncStorage.clear()
+        } catch(e) {
+            console.error("Error 0", "Memory clear failure")
+        }
+    }
+
+    // grab the user's meal list if it exists
+    async function getMealList() {
+        try {
+            const priorMealList = await AsyncStorage.getItem("@meallist") 
+            if (priorMealList !== null)  {
+                setMealList(JSON.parse(priorMealList))
+            }
+        }
+        catch(e) {
+            console.error("Error 2", "Error retrieving meals in Meals.tsx") 
+        }
+    }
 
     return<>
         <SafeAreaView style={styles.safeView}>

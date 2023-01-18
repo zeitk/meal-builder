@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from "react";
 import { Alert, ScrollView, TextInput } from 'react-native';
 import { StyleSheet, Text, View } from "react-native";
@@ -230,6 +231,17 @@ export default function MealBuilder({ navigation, route }: any) {
         return tempMeal;
     }
 
+    // store updated mealList to persistant memory
+    async function saveMealList(updatedMealList: IMeal[]) { 
+        try {
+            await AsyncStorage.setItem('@meallist', JSON.stringify(updatedMealList))
+        }
+        catch {
+            console.error("Error 2", "Save failure in MealBuilder.tsx")
+        }
+    }
+
+    // handle modal closure with or without meal saving 
     function closeModal(mode: number) {
 
         if (mode===1) {
@@ -257,11 +269,16 @@ export default function MealBuilder({ navigation, route }: any) {
             }
 
             const newMeal = saveMealData()
-
-            setMealList([
-                ...mealList!,
+            if (!mealList) {
+                console.error("Error 3", "Meal list null while saving in Mealbuilder.tsx")
+                return 
+            }
+            const updatedMealList = [
+                ...mealList,
                 newMeal
-            ])
+            ]
+            saveMealList(updatedMealList)
+            setMealList(updatedMealList)
             
             //close modal
             navigation.goBack()
@@ -277,14 +294,12 @@ export default function MealBuilder({ navigation, route }: any) {
                 }
                 else return meal
             })
+            saveMealList(updatedMealList)
             setMealList(updatedMealList)
 
             //close modal
             navigation.goBack()
         }
-
-        //close modal
-        //navigation.goBack()
     }
     
     function newMealName(newName: any) {

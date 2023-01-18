@@ -27,7 +27,7 @@ export default function FoodModal(props: any) {
         isFoodInQuicklist(props.id);
         setPage(1);
         (props.context==="MealInfo") ? setMultiplier(props.servings["multiplier"]):setMultiplier(1);
-    }, [props.id])
+    }, [props])
 
     // callback to hide modal
     function toggleModal() {
@@ -65,6 +65,8 @@ export default function FoodModal(props: any) {
 
     // add this item to the quicklist
     function addToQuicklist() {
+        
+        if (Object.keys(props.nutrition).length === 0) return
 
         // deep copy current food to prevent pointer issues
         let foodObject = JSON.parse(JSON.stringify(props.nutrition))
@@ -205,7 +207,7 @@ export default function FoodModal(props: any) {
                             <Button textColor="#c5050c" children="Remove from Quicklist" onPress={removeFromQuicklist} labelStyle={styles.buttonText}></Button>
                         }
                         { (props.context==="Search" && !isInQuicklist) &&
-                            <Button textColor="#2774AE" children="Add to Quicklist" onPress={addToQuicklist} labelStyle={styles.buttonText}></Button>
+                            <Button textColor="#2774AE" children="Add to Quicklist" onPress={addToQuicklist} labelStyle={styles.buttonText} disabled={Object.keys(props.nutrition).length === 0}></Button>
                         }
                         { (props.context==="MealInfo") &&
                             <Button textColor="#c5050c" children="Remove from Meal" onPress={removeFromMeal} labelStyle={styles.buttonText}></Button>
@@ -214,7 +216,7 @@ export default function FoodModal(props: any) {
                             <Button textColor="#c5050c" children="Remove from Quicklist" onPress={removeFromQuicklist} labelStyle={styles.buttonText}></Button>
                         } 
                         { (props.context==="MealBuilder" && !props.isInMeal) &&
-                            <Button textColor="#2774AE" children="Add to Meal" onPress={addToMeal} labelStyle={styles.buttonText}></Button>
+                            <Button textColor="#2774AE" children="Add to Meal" onPress={addToMeal} labelStyle={styles.buttonText} disabled={Object.keys(props.nutrition).length === 0}></Button>
                         } 
                         { (props.context==="MealBuilder" && props.isInMeal) &&
                             <Button textColor="#c5050c" children="Remove from Meal" onPress={removeFromMeal} labelStyle={styles.buttonText}></Button>

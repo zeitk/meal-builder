@@ -5,7 +5,6 @@ import {  View, StyleSheet, SafeAreaView, ScrollView, Text } from "react-native"
 import { Portal } from "react-native-paper";
 import { IFood } from '../interfaces/Interfaces';
 
-
 import FoodCard from "./FoodCard";
 import FoodModal from "./FoodModal";
 import { SearchBar } from './SearchBar';

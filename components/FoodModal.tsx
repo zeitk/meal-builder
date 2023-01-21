@@ -254,7 +254,6 @@ const styles = StyleSheet.create({
     // view styles
     modal: {
         margin: '3%',
-        // height: 625,
         height: '90%',
     },
     containerView: {

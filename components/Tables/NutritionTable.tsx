@@ -52,7 +52,7 @@ export default function NutritionTable(props: any) {
             <View style={styles.overallView}>
                 <DataTable>
 
-                    <View style={(props.isMealView) ? styles.mealHeaderView:styles.headerView}>
+                    <View>
                         <DataTable.Header>
                             {
                                 headers.map((header: string, i) => {
@@ -102,14 +102,7 @@ const styles = StyleSheet.create({
         width: '100%'
     },
     view: {
-        //height: '85%',
         width: '100%'
-    },
-    headerView: {
-        //height: '15%'
-    },
-    mealHeaderView: {
-        //height: '9%'
     },
     mealView: {
         height: '100%'

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useState } from "react";
-import { StyleSheet, Text, View, Image, Pressable, Button, Alert } from "react-native";
+import { StyleSheet, Text, View, Image, Pressable } from "react-native";
 import { Card } from "react-native-paper";
 import { useMealList } from '../context/MealList';
 

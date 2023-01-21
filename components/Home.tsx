@@ -281,7 +281,6 @@ const page1Styles = StyleSheet.create({
         alignItems: 'center',
         paddingLeft: 10,
         paddingTop: 8,
-        //height: '10%',
         width: '100%',
     },
     moreInfoButton_unpressed: {

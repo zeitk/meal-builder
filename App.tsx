@@ -8,7 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 
 export default function App() {
   return (
-
+    
     // base navigation for app - Tabs will do the heavier lifting
     <NavigationContainer>
       <StatusBar style='auto'/>

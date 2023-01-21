@@ -1,6 +1,6 @@
 import  React  from 'react'
 import { DataTable } from "react-native-paper";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useEffect, useState } from "react";
 
 export default function CaloricBreakdownTable(caloricBreakdownProps: any) {

@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { Alert, ScrollView, TextInput } from 'react-native';
 import { StyleSheet, Text, View } from "react-native";
 import { Button } from "react-native-paper";
-import CurrentMealContext from '../context/CurrentMeal';
-import { useMealList }  from '../context/MealList';
-import QuicklistContext from '../context/QuicklistContext';
-import FoodCard from './FoodCard';
-import { IMeal } from '../interfaces/Interfaces'
+import CurrentMealContext from '../../context/CurrentMeal';
+import { useMealList }  from '../../context/MealList';
+import QuicklistContext from '../../context/QuicklistContext';
+import FoodCard from '../FoodCard';
+import { IMeal } from '../../interfaces/Interfaces'
 import SearchFromMeals from './SearchFromMeals';
 
 export default function MealBuilder({ navigation, route }: any) {

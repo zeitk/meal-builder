@@ -1,21 +1,15 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useState } from 'react'
+import React from 'react'
 
-import MealBuilder from '../components/MealBuilder';
-import MealInfo from '../components/MealInfo';
-import Meals from '../components/Meals';
-import { MealListContext } from '../context/MealList';
-import { IMeal } from '../interfaces/Interfaces'
+import MealBuilder from '../components/Meals/MealBuilder';
+import MealInfo from '../components/Meals/MealInfo';
+import Meals from '../components/Meals/Meals';
 
 const MealStackNavigator = createNativeStackNavigator();
 
 export default function MealStack() {
 
-    const [mealList, setMealList] = useState<IMeal[]>([])
-
     return (
-        <MealListContext.Provider value={{mealList, setMealList}}>
-
         <MealStackNavigator.Navigator>
           <MealStackNavigator.Group>
             <MealStackNavigator.Screen name="Home" component={Meals} options={{headerShown: false}}/>
@@ -25,7 +19,5 @@ export default function MealStack() {
             <MealStackNavigator.Screen options={{title: 'Meal Info'}} name="MealInfo" component={MealInfo} />
           </MealStackNavigator.Group>
         </MealStackNavigator.Navigator>
-
-        </MealListContext.Provider>         
       );
 }

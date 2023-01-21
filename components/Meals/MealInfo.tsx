@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Button, Portal } from "react-native-paper";
 
-import { useMealList } from "../context/MealList";
-import FoodCard from "./FoodCard";
-import CostTable from "./Tables/CostTable";
-import FlavonoidsTable from "./Tables/FlavonoidsTable";
-import NutritionTable from "./Tables/NutritionTable";
-import FoodModal from "./FoodModal";
-import { IMeal } from "../interfaces/Interfaces";
+import { useMealList } from "../../context/MealList";
+import FoodCard from "../FoodCard";
+import CostTable from "../Tables/CostTable";
+import FlavonoidsTable from "../Tables/FlavonoidsTable";
+import NutritionTable from "../Tables/NutritionTable";
+import FoodModal from "../FoodModal";
+import { IMeal } from "../../interfaces/Interfaces";
+import MealServingInput from "./MealServingInput";
 
 
 export default function MealInfo({ navigation, route }: any) {
@@ -386,16 +387,7 @@ export default function MealInfo({ navigation, route }: any) {
                 (page === 2) &&
                 (
                     <View style={viewStyles.middle}>
-                        <View style={viewStyles.textInput}>
-                            <Text style={{fontSize: 12, color: '#757577', fontWeight: '500', paddingRight: 10}}>Number of servings: </Text>
-                            <TextInput  style={textStyles.servingTextInput}
-                                        selectionColor="#f7f7f7"  
-                                        keyboardType={"numeric"} 
-                                        returnKeyType="done" 
-                                        onSubmitEditing={(value) => newServingQuantity(value.nativeEvent.text) } 
-                                        placeholder={multiplier.toString()}
-                                        placeholderTextColor="#adadad"></TextInput>
-                        </View>
+                        <MealServingInput multiplier={multiplier} newServingQuantity={newServingQuantity}></MealServingInput>
                         <View style={viewStyles.nutrition}>
                             <NutritionTable nutrition={nutrients} isMealView={true} multiplier={multiplier}></NutritionTable>
                         </View>
@@ -481,18 +473,20 @@ const viewStyles = StyleSheet.create({
         alignItems: 'center'
     },
     nutrition: {
-        height: '83.5%',
-        padding: 7.5
+        height: '90%',
+        padding: 7.5,
+        overflow: 'hidden'
     },
     cost: {
-        height: '25%',
+        height: '20%',
         alignItems: 'center',
         borderTopWidth: 1,
         borderColor: '#dadfe1',
     },
     flavonoids: {
-        height: '68%',
-        alignItems: 'center'
+        height: '80%',
+        alignItems: 'center',
+        overflow: 'hidden'
     },
 })
 

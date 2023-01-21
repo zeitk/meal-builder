@@ -30,11 +30,6 @@ export default function FlavonoidsTable(props: any) {
     }, [props])
 
     return <>
-        <View style={styles.headerView}>
-            <Text style={{fontWeight: '500'}}>
-                Flavonoids
-            </Text>
-        </View>
 
         <View style={styles.bodyView}>
             <DataTable>
@@ -90,19 +85,16 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     columnHeadersView: {
-        height: '17.5%',
         width: '100%',
         alignItems: 'center'
     },
     scrollView: {
-        height: '82.5%',
         width: '100%'
     },
     text: {
         fontSize: 12
     },
     mealColumnHeadersView: {
-        height: '11%',
         alignItems: 'center'
     },
     mealView: {

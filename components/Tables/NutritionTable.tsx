@@ -97,19 +97,19 @@ const styles = StyleSheet.create({
         fontSize: 12,
         textTransform: 'capitalize'
     },
-    view: {
-        height: '87.5%',
-        width: '100%'
-    },
     overallView: {
         height: '100%',
         width: '100%'
     },
+    view: {
+        //height: '85%',
+        width: '100%'
+    },
     headerView: {
-        height: '12.5%'
+        //height: '15%'
     },
     mealHeaderView: {
-        height: '9%'
+        //height: '9%'
     },
     mealView: {
         height: '100%'

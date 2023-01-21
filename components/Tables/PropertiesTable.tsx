@@ -39,11 +39,7 @@ export default function PropertiesTable(propertiesProps: any) {
     return <>
 
         <View style={styles.overallView}>
-            <View style={{marginTop: 50, marginBottom: 5}}>
-                <Text style={{fontWeight: '500'}}>
-                    Properties
-                </Text>
-            </View>
+
             <DataTable>
                 <DataTable.Header>
                     {

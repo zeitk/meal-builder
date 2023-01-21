@@ -4,8 +4,8 @@ import { useState } from "react";
 import { StyleSheet, Text, View, Image, Pressable, Button, Alert } from "react-native";
 import { Card } from "react-native-paper";
 import { Feather } from '@expo/vector-icons'; 
-import { useMealList } from '../context/MealList';
-import { IMeal } from '../interfaces/Interfaces'
+import { useMealList } from '../../context/MealList';
+import { IMeal } from '../../interfaces/Interfaces'
 
 const imageSize = "100x100";
 const imageUrl = "https://spoonacular.com/cdn/ingredients_"

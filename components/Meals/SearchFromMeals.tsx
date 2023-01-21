@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import {  View, StyleSheet, SafeAreaView, ScrollView, Text } from "react-native";
 import { Portal } from "react-native-paper";
 
-import FoodCard from "./FoodCard";
-import FoodModal from "./FoodModal";
-import CurrentMealContext from '../context/CurrentMeal';
-import { SearchBar } from './SearchBar';
-import { IFood } from '../interfaces/Interfaces';
+import FoodCard from "../FoodCard";
+import FoodModal from "../FoodModal";
+import CurrentMealContext from '../../context/CurrentMeal';
+import { SearchBar } from '../SearchBar';
+import { IFood } from '../../interfaces/Interfaces';
 
 const examples: string[] = [
     "Potato",

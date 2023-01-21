@@ -1,8 +1,9 @@
 import React from 'react'
 
 import { NavigationContainer } from '@react-navigation/native';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Tabs from './navigation/Tabs';
+import { StatusBar } from 'expo-status-bar';
 
 
 export default function App() {
@@ -10,8 +11,10 @@ export default function App() {
 
     // base navigation for app - Tabs will do the heavier lifting
     <NavigationContainer>
+      <StatusBar style='auto'/>
        <Tabs></Tabs>
     </NavigationContainer>
+
   );
 }
 

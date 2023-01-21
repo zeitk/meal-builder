@@ -20,11 +20,6 @@ export default function CostTable(props: any) {
 
     return<>
         <View style={styles.overallView}>
-            <View style={{marginTop: 5, marginBottom: 5}}>
-                <Text style={{fontWeight: '500'}}>
-                    Cost
-                </Text>
-            </View>
             <DataTable>
                 <DataTable.Header>
                     <DataTable.Title textStyle={styles.text}>Cost</DataTable.Title>
@@ -49,6 +44,5 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%',
         alignItems: 'center',
-        marginTop: 10
     }
 })

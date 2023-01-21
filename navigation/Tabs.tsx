@@ -8,19 +8,33 @@ import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { useState, useEffect } from 'react';
 import QuicklistContext from '../context/QuicklistContext';
+import { MealListContext } from '../context/MealList';
 import MealStack from './MealStack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { IMeal } from '../interfaces/Interfaces';
 
 const TabNavigator = createBottomTabNavigator();
 
 export default function Tabs() {
     
     const [quicklist, setQuicklist] = useState<any[]>([])
-    
+    const [mealList, setMealList] = useState<IMeal[]>([])
+
     useEffect(() => {
         getQuicklist();
+        getMealList(); 
     }, [])
 
+    // utility function in case memory needs to be wiped
+    async function clearMemory() {
+        try {
+            await AsyncStorage.clear()
+        } catch(e) {
+            console.error("Error 0", "Memory clear failure")
+        }
+    }
+
+    // grab the user's quicklist if it exists
     async function getQuicklist() {
         try {
             const priorQuicklist = await AsyncStorage.getItem('@quicklist')
@@ -33,8 +47,23 @@ export default function Tabs() {
         }
     }
 
+    // grab the user's meal list if it exists
+    async function getMealList() {
+        try {
+            const priorMealList = await AsyncStorage.getItem("@meallist") 
+            if (priorMealList !== null)  {
+                setMealList(JSON.parse(priorMealList))
+            }
+        }
+        catch(e) {
+            console.error("Error 2", "Error retrieving meals in Tabs.tsx") 
+        }
+    }
+
     return<>
+        <MealListContext.Provider value={{mealList,setMealList}}>
         <QuicklistContext.Provider value={[quicklist,setQuicklist]}>
+
         <TabNavigator.Navigator>
             <TabNavigator.Screen name="Home" component={Home} options={{headerShown: true, tabBarIcon() {
                 return<>
@@ -57,6 +86,8 @@ export default function Tabs() {
                 </>
                 },}}></TabNavigator.Screen>
         </TabNavigator.Navigator>
+
         </QuicklistContext.Provider>
+        </MealListContext.Provider>
     </>
 }

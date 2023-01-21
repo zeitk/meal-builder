@@ -6,6 +6,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Button, Modal, Portal } from "react-native-paper";
 import QuicklistContext from '../context/QuicklistContext';
 import { IFood } from '../interfaces/Interfaces';
+import MealServingInput from './Meals/MealServingInput';
 import CaloricBreakdownTable from "./Tables/CaloricBreakdownTable";
 import CostTable from "./Tables/CostTable";
 import FlavonoidsTable from "./Tables/FlavonoidsTable";
@@ -151,7 +152,12 @@ export default function FoodModal(props: any) {
                                     <Text style={styles.header}>{props.name}</Text>
                                 </View>
                                 <View style={styles.servingSizeView}>
-                                    <ServingSizeTable servingSizeProps={props.nutrition["weightPerServing"]} newMultiplier={newMultiplier} multiplier={multiplier}></ServingSizeTable>
+                                    { (props.context==="Home") ?
+                                        <MealServingInput newServingQuantity={newMultiplier} multiplier={props.nutrition["weightPerServing"]} context="Home"></MealServingInput>
+                                        :
+                                        <ServingSizeTable servingSizeProps={props.nutrition["weightPerServing"]} newMultiplier={newMultiplier} multiplier={multiplier}></ServingSizeTable>
+                                    }
+                                    
                                 </View>
                                 <View style={styles.nutritionView}>
                                     <NutritionTable nutrition={props.nutrition["nutrients"]} multiplier={multiplier}></NutritionTable>
@@ -165,6 +171,9 @@ export default function FoodModal(props: any) {
                             <View style={styles.upperView}>
                                 <View style={styles.headerView}>
                                     <Text style={styles.header}>{props.name}</Text>
+                                </View>
+                                <View style={styles.costView}>
+                                    <CostTable cost={props.cost} multiplier={multiplier}></CostTable>
                                 </View>
                                 <View style={styles.caloricBreakdownView}>
                                     <CaloricBreakdownTable caloricBreakdownProps={props.nutrition["caloricBreakdown"]}></CaloricBreakdownTable>
@@ -183,9 +192,6 @@ export default function FoodModal(props: any) {
                                 <View style={styles.headerView}>
                                     <Text style={styles.header}>{props.name}</Text>
                                 </View>
-                                <View style={styles.costView}>
-                                    <CostTable cost={props.cost} multiplier={multiplier}></CostTable>
-                                </View>
                                 <View style={styles.flavonoidsView}>
                                     <FlavonoidsTable flavonoidsProps={props.nutrition["flavonoids"]} multiplier={multiplier}></FlavonoidsTable>
                                 </View>
@@ -194,14 +200,20 @@ export default function FoodModal(props: any) {
                         )
                     }
 
-                    <View style={styles.pageButtonsView}>
-                        <Button textColor="#2774AE" children="Prev" onPress={prevPage} disabled={page===1} labelStyle={styles.pageButtonText}></Button>
-                        <View style={styles.pageText}>
-                            <Text style={styles.text}>{page} of 3</Text>
+                    { (props.context !== "Home") 
+                        ?
+                        <View style={styles.pageButtonsView}>
+                            <Button textColor="#2774AE" children="Prev" onPress={prevPage} disabled={page===1} labelStyle={styles.pageButtonText}></Button>
+                            <View style={styles.pageText}>
+                                <Text style={styles.text}>{page} of 3</Text>
+                            </View>
+                            <Button textColor="#2774AE" children="Next" onPress={nextPage} disabled={page===3} labelStyle={styles.pageButtonText}></Button>
                         </View>
-                        <Button textColor="#2774AE" children="Next" onPress={nextPage} disabled={page===3} labelStyle={styles.pageButtonText}></Button>
-                    </View>
-                    <View style={styles.bottomButtonsView}>
+                        :
+                        null
+                    }
+
+                    <View style={(props.context==="Home" ? styles.buttonsInHomeView:styles.bottomButtonsView)}>
                         <View style={styles.multipurposeButton}>
                         { (props.context==="Search" && isInQuicklist) &&
                             <Button textColor="#c5050c" children="Remove from Quicklist" onPress={removeFromQuicklist} labelStyle={styles.buttonText}></Button>
@@ -220,7 +232,10 @@ export default function FoodModal(props: any) {
                         } 
                         { (props.context==="MealBuilder" && props.isInMeal) &&
                             <Button textColor="#c5050c" children="Remove from Meal" onPress={removeFromMeal} labelStyle={styles.buttonText}></Button>
-                        }                             
+                        }      
+                        { (props.context==="Home") &&
+                            <Button textColor="#2774AE" children="See more in Meals" onPress={props.goToMeals} labelStyle={styles.buttonText}></Button>
+                        }            
                         </View>
                         <View style={styles.closeButton}>
                             <Button textColor='#c5050c'  children="Close" onPress={toggleModal} labelStyle={styles.buttonText}></Button>
@@ -237,13 +252,14 @@ const styles = StyleSheet.create({
     // view styles
     modal: {
         margin: '3%',
-        height: 625,
+        // height: 625,
+        height: '92.5%',
     },
     containerView: {
         alignItems: 'center',
         height: '100%',
-        padding: 10,
-        paddingTop: 15,
+        paddingHorizontal: 10,
+        paddingBottom: 10,
         backgroundColor: '#f7f7f7',
         borderColor: '#282728',
         borderWidth: 2,
@@ -255,42 +271,45 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     headerView: {
-        height: '5%',
+        height: '7.5%',
         width: '100%',
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     servingSizeView: {
-        height: '17.5%',
+        height: '15%',
         width: '100%',
         alignItems: 'center'
     },
     nutritionView: {
         height: '77.5%',
         width: '100%',
+        overflow: 'hidden'
     },
     caloricBreakdownView: {
-        height: '35%',
+        height: '20%',
         width: '100%',
     },
     propertiesView: {
-        height: '60%',
+        height: '52.5%',
         width: '100%',
         alignItems: 'flex-start'
     },
     costView: {
-        height: '27.5%',
+        height: '20%',
         width: '100%',
     },
     flavonoidsView: {
-        height: '67.5%',
+        height: '92.5%',
         width: '100%',
+        overflow: 'hidden'
     },
     pageButtonsView: {
         height: '9%',
         flexDirection: 'row',
-        paddingLeft: 95,
         width: '100%',
-        paddingTop: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
         borderTopWidth: 1,
         borderColor: '#dadfe1',
     },
@@ -303,6 +322,15 @@ const styles = StyleSheet.create({
     },
     multipurposeButton: {
         width: '60%'
+    },
+    buttonsInHomeView: {
+        flexDirection: 'row',
+        height: '20%',
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderTopWidth: 1,
+        borderColor: '#dadfe1',
     },
 
     // text styles

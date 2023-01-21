@@ -33,8 +33,9 @@ export default function ServingSizeTable(props: any) {
         
     }, [props])
 
-    return <>
-        <View style={{marginTop: 15}}>
+    return (
+        <View style={styles.overallView}>
+        <View style={styles.titleView}>
             <Text>
                 Serving Size
             </Text>
@@ -59,11 +60,15 @@ export default function ServingSizeTable(props: any) {
             <Text style={{paddingLeft: 3}}> {(unit==='g') ? "grams":unit}</Text>
             <Text style={styles.helpText}>454g = 1lb</Text>
         </View>
-
-    </>
+    </View> 
+    )
 }
 
 const styles = StyleSheet.create({
+    overallView: {
+        height: '100%',
+        width: '100%'
+    },
     header: {
         fontSize: 12,
         textTransform: 'capitalize'
@@ -79,11 +84,12 @@ const styles = StyleSheet.create({
         borderColor: '#dadfe1'
     },
     view: {
+        height: '75%',
         flexDirection: 'row',
         width: '98%',
-        padding: 8,
+        padding: '2%',
         paddingLeft: 12,
-        marginTop: 10,
+        marginTop: '1%',
         borderTopWidth: 1,
         borderBottomWidth: 1,
         borderColor: '#dadfe1',
@@ -91,7 +97,12 @@ const styles = StyleSheet.create({
     },
     helpText: {
         fontSize: 10,
-        paddingLeft: 110,
+        paddingLeft: '33%',
         color: '#adadad'
+    },
+    titleView: {
+        height: '25%',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })

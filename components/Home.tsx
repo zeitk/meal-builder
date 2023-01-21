@@ -91,6 +91,7 @@ export default function Home({ navigation }:any) {
         { (page===1) 
             ? 
             <View style={page1Styles.overall}>
+                <ScrollView style={page1Styles.verticalScrollView}>
                 <View style={page1Styles.greetingView}>
                         <Text style={page1Styles.greetingText}>{greeting}</Text>
                 </View> 
@@ -100,7 +101,7 @@ export default function Home({ navigation }:any) {
                     </View> 
                     {(mealList !== null && mealList.length>0)
                     ?
-                    <ScrollView style={page1Styles.scrollView} horizontal={true}>
+                    <ScrollView style={page1Styles.horizontalScrollView} horizontal={true}>
                     {
                         mealList.map((meal: any, i: number) => {
                             return<HomeCard key={i} mode="meal" id={meal["id"]} name={meal["name"]} foods={meal["foods"]} callback={moreInfo}></HomeCard>
@@ -120,7 +121,7 @@ export default function Home({ navigation }:any) {
                     </View> 
                     { (quicklist !== null && quicklist.length>0)
                     ?
-                    <ScrollView style={page1Styles.scrollView} horizontal={true}>
+                    <ScrollView style={page1Styles.horizontalScrollView} horizontal={true}>
                     {
                         quicklist.map((food: any, i: number) => {
                             return <HomeCard key={i} mode="food" id={food["id"]} image={food["image"]} callback={moreInfo} name={food["name"]} ></HomeCard>
@@ -133,14 +134,16 @@ export default function Home({ navigation }:any) {
                         <Button mode="text" textColor="#2774AE" children={"Go to 'Search'"} style={page2Styles.button} labelStyle={page2Styles.buttonText} onPress={()=>(navigation.navigate("Search"))}></Button>
                     </View>
                     }
-                </View>
-                
+                </View>  
                 <View style={page1Styles.buttonView}>
                     <Pressable  style={({pressed})=> pressed ? page1Styles.moreInfoButton_pressed:page1Styles.moreInfoButton_unpressed} onPress={() => setPage(2)}>
                         <Ionicons name="ios-information-circle-outline" size={20} color="black" />
                         <Text style={page1Styles.exampleBannerText}> About App</Text>
                     </Pressable>
-                </View>
+                </View>     
+                </ScrollView>
+                
+
 
 
                 <Portal.Host>
@@ -244,14 +247,17 @@ const page1Styles = StyleSheet.create({
         width: '100%'
     },
     listView: {
-        height: '42.5%',
         width: '100%'
     },
-    scrollView: {
-        height: '33%'
+    verticalScrollView: {
+        height: '100%',
+        width: '100%'
+    },
+    horizontalScrollView: {
+        height: 250
     },
     noSavedItemsView: {
-        height: '90%',
+        height: 125,
         justifyContent: 'center',
         alignItems: 'center'
     },
@@ -275,7 +281,7 @@ const page1Styles = StyleSheet.create({
         alignItems: 'center',
         paddingLeft: 10,
         paddingTop: 8,
-        height: '7.5%',
+        //height: '10%',
         width: '100%',
     },
     moreInfoButton_unpressed: {
@@ -302,6 +308,8 @@ const page1Styles = StyleSheet.create({
         fontSize : 16,
     },
     buttonView: {
-        height: '7.5%',
+        flexDirection: 'row',
+        alignSelf: 'flex-end',
+        height: 50,
     }
 })

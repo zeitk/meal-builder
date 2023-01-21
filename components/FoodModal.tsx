@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useContext } from 'react'
 import { useEffect, useState } from "react";
-import { Alert } from 'react-native';
+import { Alert, SafeAreaView } from 'react-native';
 import { StyleSheet, Text, View } from "react-native";
 import { Button, Modal, Portal } from "react-native-paper";
 import QuicklistContext from '../context/QuicklistContext';
@@ -141,6 +141,7 @@ export default function FoodModal(props: any) {
     }
 
     return (
+        <SafeAreaView>
         <Portal>
             <Modal visible={props.modalVisible} style={styles.modal} onDismiss={toggleModal}>
                 <View style={styles.containerView}>
@@ -244,6 +245,7 @@ export default function FoodModal(props: any) {
                 </View>
             </Modal>      
         </Portal>
+        </SafeAreaView>
     )
 }
 
@@ -253,7 +255,7 @@ const styles = StyleSheet.create({
     modal: {
         margin: '3%',
         // height: 625,
-        height: '92.5%',
+        height: '90%',
     },
     containerView: {
         alignItems: 'center',

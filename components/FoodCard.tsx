@@ -71,7 +71,7 @@ export default function FoodCard(props: IFood) {
                                 { (isPressed) 
                                 ? 
                                 <View style={styles.quantityView}>
-                                    <Text style={styles.quantityText}>Quantity(g): </Text>
+                                    <Text numberOfLines={2} style={styles.quantityText}>Quantity (g): </Text>
 
                                     <TextInput  
                                         style={styles.quantityTextInput}

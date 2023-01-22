@@ -104,7 +104,7 @@ export default function Home({ navigation }:any) {
                     <ScrollView style={page1Styles.horizontalScrollView} horizontal={true}>
                     {
                         mealList.map((meal: any, i: number) => {
-                            return<HomeCard key={i} mode="meal" id={meal["id"]} name={meal["name"]} foods={meal["foods"]} callback={moreInfo}></HomeCard>
+                            return<HomeCard key={i} mode="meal" id={meal["id"]} name={meal["name"]} foods={meal["foods"]} callback={moreInfo} navigation={navigation}></HomeCard>
                         })
                     }
                     </ScrollView>

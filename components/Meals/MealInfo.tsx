@@ -3,7 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { Button, Portal } from "react-native-paper";
-
+import { StatusBar } from 'expo-status-bar';
 import { useMealList } from "../../context/MealList";
 import FoodCard from "../FoodCard";
 import CostTable from "../Tables/CostTable";
@@ -341,9 +341,15 @@ export default function MealInfo({ navigation, route }: any) {
         }
     }
 
+    function navigateToMealBuilder() {
+        if (!mealList) return
+        if (route.params["mode"]==='Home')  navigation.navigate('MealBuilderHome', { meal: mealList[mealIndex]})
+        else navigation.navigate('MealBuilder', { meal: mealList[mealIndex]})
+    }
+
     return (
         <View >
-            
+            <StatusBar style="light"></StatusBar>
             <View style={viewStyles.top}>
                 { (isNameEditing) ?
                     <View style={viewStyles.header}>
@@ -371,7 +377,7 @@ export default function MealInfo({ navigation, route }: any) {
                 <View style={viewStyles.middle}>
                     <View style={viewStyles.foodsLabel}>
                         <Text style={textStyles.foodsLabel}>Items : </Text>
-                        <Button children="Add Items" textColor="#282728" labelStyle={textStyles.editButton} style={buttonStyles.addFood} onPress={()=>{ navigation.navigate('MealBuilder', { meal: mealList[mealIndex]} )} }></Button>
+                        <Button children="Add Items" textColor="#282728" labelStyle={textStyles.editButton} style={buttonStyles.addFood} onPress={navigateToMealBuilder}></Button>
                     </View>
                     <ScrollView style={viewStyles.scroll}>
                     {

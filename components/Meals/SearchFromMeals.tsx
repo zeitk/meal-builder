@@ -14,7 +14,7 @@ const examples: string[] = [
     "Potato",
     "Beans",
     "Bread",
-    "Corn"
+    "Egg"
 ]
 
 export default function SearchFromMeals(props: any) {

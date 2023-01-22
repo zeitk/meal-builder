@@ -32,7 +32,9 @@ export default function HomeCard(props: any) {
     }
 
     function showMoreInfo() {
-        props.callback(props.id, props.mode)
+        
+        if (props.mode==="food") props.callback(props.id, props.mode)
+        else props.navigation.navigate('MealInfoHome', { id: props["id"], mode: "Home" })
     }
 
     return <>

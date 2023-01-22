@@ -32,11 +32,6 @@ export default function CaloricBreakdownTable(caloricBreakdownProps: any) {
 
     return <>
         <View style={styles.overallView}>
-            {/* <View style={{marginTop: 40, marginBottom: 5}}>
-                <Text  style={{fontWeight: '500'}}>
-                    Caloric Breakdown
-                </Text>
-            </View> */}
             <DataTable>
                 <DataTable.Header>
                     {

@@ -11,9 +11,9 @@ import { SearchBar } from './SearchBar';
 
 const examples: string[] = [
     "Potato",
-    "Broccoli",
+    "Bean",
     "Bread",
-    "Corn"
+    "Egg"
 ]
 
 export default function Search({ navigation } : any) {
@@ -94,7 +94,11 @@ export default function Search({ navigation } : any) {
 
     function sortItems(items: any) {
         // sort foods by category before storing
-        items.sort((a: any, b: any) => a["aisle"].localeCompare(b["aisle"]))
+        items.sort((a: any, b: any) => {
+            if (a["aisle"]===null) return b
+            else if (b["aisle"]===null) return a
+            else return a["aisle"].localeCompare(b["aisle"])
+        })
         setItems(items)
     }
 
